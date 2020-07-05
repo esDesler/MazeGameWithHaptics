@@ -30,6 +30,8 @@ public class GamePanel extends JPanel implements Runnable {
     static int panelWidth;
     static int panelHeight;
 
+    private Haptics haptics;
+
     private Thread thread;
     private boolean running;
     int resetDelay;
@@ -77,6 +79,7 @@ public class GamePanel extends JPanel implements Runnable {
         System.gc();
         this.running = true;
         new Thread(new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1))).start();
+        //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
     }
 
     /**
@@ -338,6 +341,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (System.currentTimeMillis() - timer > 1000) {
                 timer = System.currentTimeMillis();
                 GameLauncher.window.update(fps, ticks);
+                //haptics.generateHaptics();
                 fps = 0;
                 ticks = 0;
 

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Haptics implements Runnable {
-    double totalDistanceVertical = 32 * 13;
-    double totalDistanceHorizontal = 32 * 15;
+    double totalDistanceVertical = 32 * 12;
+    double totalDistanceHorizontal = 32 * 14;
 
     private Bomber player;
 
@@ -28,24 +28,27 @@ public class Haptics implements Runnable {
 
     public void generateHaptics() {
         updateClosestObjectsInAllDirections();
-        calculateAndOutputDistances(); // Order up, down, left, right
+        calculateAndUpdateDistances(); // Order up, down, left, right
+        hapticsAPI.outputMotorInformationToArduino();
+        /*
         GameObject objectInPlayingDirection = getObjectInPlayingDirection();
         outputDescriptiveFeedback(objectInPlayingDirection);
+         */
     }
 
     private void outputDescriptiveFeedback(GameObject objectInPlayingDirection) {
         if (objectInPlayingDirection instanceof Wall) {
             if (((Wall) objectInPlayingDirection).isBreakable()) {
-                hapticsAPI.thumb();
+                //hapticsAPI.thumb();
             } else {
-                hapticsAPI.indexFinger();
+                //hapticsAPI.indexFinger();
             }
         } else if (objectInPlayingDirection instanceof Bomb) {
-            hapticsAPI.middleFinger();
+            //hapticsAPI.middleFinger();
         } else if (objectInPlayingDirection instanceof Powerup) {
-            hapticsAPI.ringFinger();
+            //hapticsAPI.ringFinger();
         } else if (objectInPlayingDirection instanceof Explosion) {
-            hapticsAPI.littleFinger();
+            //hapticsAPI.littleFinger();
         }
     }
 
@@ -63,16 +66,16 @@ public class Haptics implements Runnable {
         return null;
     }
 
-    private void calculateAndOutputDistances() {
+    private void calculateAndUpdateDistances() {
         double distance;
         distance = player.getColliderCenter().getY() - closestObjectUp.getColliderCenter().getY();
-        hapticsAPI.up(distance, totalDistanceVertical);
+        hapticsAPI.updateUpIntensity(distance, totalDistanceVertical);
         distance = closestObjectDown.getColliderCenter().getY() - player.getColliderCenter().getY();
-        hapticsAPI.down(distance, totalDistanceVertical);
+        hapticsAPI.updateDownIntensity(distance, totalDistanceVertical);
         distance = player.getColliderCenter().getX() - closestObjectLeft.getColliderCenter().getX();
-        hapticsAPI.left(distance, totalDistanceHorizontal);
+        hapticsAPI.updateLeftIntensity(distance, totalDistanceHorizontal);
         distance = closestObjectRight.getColliderCenter().getX() - player.getColliderCenter().getX();
-        hapticsAPI.right(distance, totalDistanceHorizontal);
+        hapticsAPI.updateRightIntensity(distance, totalDistanceHorizontal);
     }
 
     private void updateClosestObjectsInAllDirections() {
@@ -218,9 +221,11 @@ public class Haptics implements Runnable {
     @Override
     public void run() {
         while (true) {
+            long time = System.currentTimeMillis();
             generateHaptics();
+            System.out.println(System.currentTimeMillis() - time);
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -4,9 +4,9 @@ public class Motor {
 
     private String motorId; // from M0 - M9
     private int motorStatus; // 0 / 1 for off / on
-    private double vibrationIntensity; // from 0 - 100
-    private double onTime; // in ms
-    private double offTime; // in ms
+    private int vibrationIntensity; // from 0 - 100
+    private int onTime; // in ms
+    private int offTime; // in ms
 
     public Motor(String motorId) {
         this.motorId = motorId;
@@ -20,8 +20,8 @@ public class Motor {
         serialConnector.write(generateDataPackage());
     }
 
-    private String generateDataPackage() {
-        return motorId + "," + motorStatus + "," + vibrationIntensity + "," + onTime + "," + offTime;
+    public String generateDataPackage() {
+        return motorId + "," + motorStatus + "," + vibrationIntensity + "," + onTime + "," + offTime + ";";
     }
 
     public int getMotorStatus() {
@@ -36,7 +36,7 @@ public class Motor {
         return vibrationIntensity;
     }
 
-    public void setVibrationIntensity(double vibrationIntensity) {
+    public void setVibrationIntensity(int vibrationIntensity) {
         this.vibrationIntensity = vibrationIntensity;
     }
 
@@ -44,7 +44,7 @@ public class Motor {
         return onTime;
     }
 
-    public void setOnTime(double onTime) {
+    public void setOnTime(int onTime) {
         this.onTime = onTime;
     }
 
@@ -52,7 +52,7 @@ public class Motor {
         return offTime;
     }
 
-    public void setOffTime(double offTime) {
+    public void setOffTime(int offTime) {
         this.offTime = offTime;
     }
 
