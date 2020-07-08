@@ -19,6 +19,11 @@ public class Haptics implements Runnable {
     GameObject closestObjectLeft;
     GameObject closestObjectRight;
 
+    double distanceUp;
+    double distanceDown;
+    double distanceLeft;
+    double distanceRight;
+
     private GameToHapticsAPI hapticsAPI;
 
     public Haptics(Bomber player) {
@@ -29,26 +34,37 @@ public class Haptics implements Runnable {
     public void generateHaptics() {
         updateClosestObjectsInAllDirections();
         calculateAndUpdateDistances(); // Order up, down, left, right
+        updateMotorInformation();
+
+        outputDescriptiveFeedback(getObjectInPlayingDirection());
+
+        outputMotorInformationToArduino();
+    }
+
+    private void outputMotorInformationToArduino() {
         hapticsAPI.outputMotorInformationToArduino();
-        /*
-        GameObject objectInPlayingDirection = getObjectInPlayingDirection();
-        outputDescriptiveFeedback(objectInPlayingDirection);
-         */
+    }
+
+    private void updateMotorInformation() {
+        hapticsAPI.updateUpIntensity(distanceUp, totalDistanceVertical);
+        hapticsAPI.updateDownIntensity(distanceDown, totalDistanceVertical);
+        hapticsAPI.updateLeftIntensity(distanceLeft, totalDistanceHorizontal);
+        hapticsAPI.updateRightIntensity(distanceRight, totalDistanceHorizontal);
     }
 
     private void outputDescriptiveFeedback(GameObject objectInPlayingDirection) {
         if (objectInPlayingDirection instanceof Wall) {
             if (((Wall) objectInPlayingDirection).isBreakable()) {
-                //hapticsAPI.thumb();
+                hapticsAPI.thumb();
             } else {
-                //hapticsAPI.indexFinger();
+                hapticsAPI.indexFinger();
             }
         } else if (objectInPlayingDirection instanceof Bomb) {
-            //hapticsAPI.middleFinger();
+            hapticsAPI.middleFinger();
         } else if (objectInPlayingDirection instanceof Powerup) {
-            //hapticsAPI.ringFinger();
+            hapticsAPI.ringFinger();
         } else if (objectInPlayingDirection instanceof Explosion) {
-            //hapticsAPI.littleFinger();
+            hapticsAPI.littleFinger();
         }
     }
 
@@ -67,15 +83,10 @@ public class Haptics implements Runnable {
     }
 
     private void calculateAndUpdateDistances() {
-        double distance;
-        distance = player.getColliderCenter().getY() - closestObjectUp.getColliderCenter().getY();
-        hapticsAPI.updateUpIntensity(distance, totalDistanceVertical);
-        distance = closestObjectDown.getColliderCenter().getY() - player.getColliderCenter().getY();
-        hapticsAPI.updateDownIntensity(distance, totalDistanceVertical);
-        distance = player.getColliderCenter().getX() - closestObjectLeft.getColliderCenter().getX();
-        hapticsAPI.updateLeftIntensity(distance, totalDistanceHorizontal);
-        distance = closestObjectRight.getColliderCenter().getX() - player.getColliderCenter().getX();
-        hapticsAPI.updateRightIntensity(distance, totalDistanceHorizontal);
+        distanceUp = player.getColliderCenter().getY() - closestObjectUp.getColliderCenter().getY();
+        distanceDown = closestObjectDown.getColliderCenter().getY() - player.getColliderCenter().getY();
+        distanceLeft = player.getColliderCenter().getX() - closestObjectLeft.getColliderCenter().getX();
+        distanceRight = closestObjectRight.getColliderCenter().getX() - player.getColliderCenter().getX();
     }
 
     private void updateClosestObjectsInAllDirections() {
@@ -222,7 +233,9 @@ public class Haptics implements Runnable {
     public void run() {
         while (true) {
             long time = System.currentTimeMillis();
+
             generateHaptics();
+
             System.out.println(System.currentTimeMillis() - time);
             try {
                 Thread.sleep(1000);

@@ -79,27 +79,27 @@ public class ResourceCollection {
     public static void readFiles() {
         try {
             System.out.println(System.getProperty("user.dir"));
-            Images.ICON.image = ImageIO.read(ResourceCollection.class.getResource("/resources/icon.png"));
-            Images.BACKGROUND.image = ImageIO.read(ResourceCollection.class.getResource("/resources/bg.png"));
-            Images.SOFT_WALL.image = ImageIO.read(ResourceCollection.class.getResource("/resources/softWall.png"));
-            Images.POWER_BOMB.image = ImageIO.read(ResourceCollection.class.getResource("/resources/power_bomb.png"));
-            Images.POWER_FIREUP.image = ImageIO.read(ResourceCollection.class.getResource("/resources/power_fireup.png"));
-            Images.POWER_FIREMAX.image = ImageIO.read(ResourceCollection.class.getResource("/resources/power_firemax.png"));
-            Images.POWER_SPEED.image = ImageIO.read(ResourceCollection.class.getResource("/resources/power_speed.png"));
-            Images.POWER_PIERCE.image = ImageIO.read(ResourceCollection.class.getResource("/resources/power_pierce.png"));
-            Images.POWER_KICK.image = ImageIO.read(ResourceCollection.class.getResource("/resources/power_kick.png"));
-            Images.POWER_TIMER.image = ImageIO.read(ResourceCollection.class.getResource("/resources/power_timer.png"));
+            Images.ICON.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/icon.png"));
+            Images.BACKGROUND.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bg.png"));
+            Images.SOFT_WALL.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/softWall.png"));
+            Images.POWER_BOMB.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_bomb.png"));
+            Images.POWER_FIREUP.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_fireup.png"));
+            Images.POWER_FIREMAX.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_firemax.png"));
+            Images.POWER_SPEED.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_speed.png"));
+            Images.POWER_PIERCE.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_pierce.png"));
+            Images.POWER_KICK.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_kick.png"));
+            Images.POWER_TIMER.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_timer.png"));
 
-            SpriteMaps.PLAYER_1.image = ImageIO.read(ResourceCollection.class.getResource("/resources/bomber1.png"));
-            SpriteMaps.PLAYER_2.image = ImageIO.read(ResourceCollection.class.getResource("/resources/bomber2.png"));
-            SpriteMaps.PLAYER_3.image = ImageIO.read(ResourceCollection.class.getResource("/resources/bomber3.png"));
-            SpriteMaps.PLAYER_4.image = ImageIO.read(ResourceCollection.class.getResource("/resources/bomber4.png"));
-            SpriteMaps.HARD_WALLS.image = ImageIO.read(ResourceCollection.class.getResource("/resources/hardWalls.png"));
-            SpriteMaps.BOMB.image = ImageIO.read(ResourceCollection.class.getResource("/resources/bomb.png"));
-            SpriteMaps.BOMB_PIERCE.image = ImageIO.read(ResourceCollection.class.getResource("/resources/bomb_pierce.png"));
-            SpriteMaps.EXPLOSION_SPRITEMAP.image = ImageIO.read(ResourceCollection.class.getResource("/resources/explosion.png"));
+            SpriteMaps.PLAYER_1.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomber1.png"));
+            SpriteMaps.PLAYER_2.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomber2.png"));
+            SpriteMaps.PLAYER_3.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomber3.png"));
+            SpriteMaps.PLAYER_4.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomber4.png"));
+            SpriteMaps.HARD_WALLS.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/hardWalls.png"));
+            SpriteMaps.BOMB.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomb.png"));
+            SpriteMaps.BOMB_PIERCE.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomb_pierce.png"));
+            SpriteMaps.EXPLOSION_SPRITEMAP.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/explosion.png"));
 
-            Files.DEFAULT_MAP.file = new InputStreamReader(ResourceCollection.class.getResourceAsStream("/resources/default.csv"));
+            Files.DEFAULT_MAP.file = new InputStreamReader(ResourceCollection.class.getResourceAsStream("/resources/animation/default.csv"));
         } catch (IOException e) {
             System.err.println(e + ": Cannot read image file");
             e.printStackTrace();

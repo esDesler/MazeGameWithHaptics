@@ -12,12 +12,8 @@ public class Motor {
         this.motorId = motorId;
         this.motorStatus = 0;
         this.vibrationIntensity = 0;
-        this.onTime = 0;
-        this.offTime = 0;
-    }
-
-    public void sendToArduino(SerialConnector serialConnector) {
-        serialConnector.write(generateDataPackage());
+        this.onTime = 500; // Default value
+        this.offTime = 100; // Default value
     }
 
     public String generateDataPackage() {

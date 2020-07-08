@@ -1,5 +1,6 @@
 package gameobjects;
 
+import Sounds.SoundPlayer;
 import util.GameObjectCollection;
 
 import java.awt.geom.Point2D;
@@ -25,6 +26,9 @@ public class Bomber extends Player {
     private int spriteIndex;
     private int spriteTimer;
 
+    // player id
+    private int playerId;
+
     // Stats
     private float moveSpeed;
     private int firepower;
@@ -39,7 +43,7 @@ public class Bomber extends Player {
      * @param position Coordinates of this object in the game world
      * @param spriteMap 2D array of sprites used for animation
      */
-    public Bomber(Point2D.Float position, BufferedImage[][] spriteMap) {
+    public Bomber(Point2D.Float position, BufferedImage[][] spriteMap, int playerId) {
         super(position, spriteMap[1][0]);
         this.collider.setRect(this.position.x + 3, this.position.y + 16 + 3, this.width - 6, this.height - 16 - 6);
 
@@ -57,6 +61,8 @@ public class Bomber extends Player {
         this.bombTimer = 250;
         this.pierce = false;
         this.kick = false;
+
+        this.playerId = playerId;
     }
 
     // --- MOVEMENT ---
@@ -93,6 +99,7 @@ public class Bomber extends Player {
         }
 
         // Spawn the bomb
+        SoundPlayer.playBombPlacementSound();
         this.bomb = new Bomb(spawnLocation, this.firepower, this.pierce, this.bombTimer, this);
         GameObjectCollection.spawn(bomb);
         this.bombAmmo--;
@@ -208,6 +215,13 @@ public class Bomber extends Player {
 
     @Override
     public void handleCollision(Wall collidingObj) {
+        if (playerId == 2) {
+            if (collidingObj.isBreakable()) {
+                SoundPlayer.playSoftWallCollisionSound(System.currentTimeMillis());
+            } else {
+                SoundPlayer.playHardWallCollisionSound(System.currentTimeMillis());
+            }
+        }
         this.solidCollision(collidingObj);
     }
 
@@ -218,6 +232,7 @@ public class Bomber extends Player {
     @Override
     public void handleCollision(Explosion collidingObj) {
         if (!this.dead) {
+            SoundPlayer.playPlayerDiedSound();
             this.dead = true;
             this.spriteIndex = 0;
         }
@@ -238,13 +253,16 @@ public class Bomber extends Player {
             if (this.kick && !collidingObj.isKicked()) {
                 // From the top
                 if (intersection.getMaxY() >= this.collider.getMaxY() && this.DownPressed) {
+                    SoundPlayer.playBombKickedSound();
                     collidingObj.setKicked(true, KickDirection.FromTop);
                 }
                 // From the bottom
                 if (intersection.getMaxY() >= collidingObj.collider.getMaxY() && this.UpPressed) {
+                    SoundPlayer.playBombKickedSound();
                     collidingObj.setKicked(true, KickDirection.FromBottom);
                 }
             }
+            SoundPlayer.playBombCollisionSound(System.currentTimeMillis());
             this.solidCollision(collidingObj);
         }
         // Horizontal collision
@@ -252,13 +270,16 @@ public class Bomber extends Player {
             if (this.kick && !collidingObj.isKicked()) {
                 // From the left
                 if (intersection.getMaxX() >= this.collider.getMaxX() && this.RightPressed) {
+                    SoundPlayer.playBombKickedSound();
                     collidingObj.setKicked(true, KickDirection.FromLeft);
                 }
                 // From the right
                 if (intersection.getMaxX() >= collidingObj.collider.getMaxX() && this.LeftPressed) {
+                    SoundPlayer.playBombKickedSound();
                     collidingObj.setKicked(true, KickDirection.FromRight);
                 }
             }
+            SoundPlayer.playBombCollisionSound(System.currentTimeMillis());
             this.solidCollision(collidingObj);
         }
     }
@@ -269,6 +290,7 @@ public class Bomber extends Player {
      */
     @Override
     public void handleCollision(Powerup collidingObj) {
+        SoundPlayer.playPowerUpSound();
         collidingObj.grantBonus(this);
         collidingObj.destroy();
     }

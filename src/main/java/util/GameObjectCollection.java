@@ -6,6 +6,7 @@ import gameobjects.GameObject;
 import gameobjects.TileObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,7 +16,11 @@ import java.util.List;
  */
 public class GameObjectCollection {
 
-    public static List<List<? extends GameObject>> gameObjects;
+    public static volatile List<List<? extends GameObject>> gameObjects;
+
+    public static List<List<? extends GameObject>> getGameObjects() {
+        return new ArrayList<>(gameObjects);
+    }
 
     // Tile objects are bombs, walls, and powerups
     public static ArrayList<TileObject> tileObjects;

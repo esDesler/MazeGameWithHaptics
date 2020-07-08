@@ -1,5 +1,6 @@
 package gameobjects;
 
+import Sounds.SoundPlayer;
 import util.GameObjectCollection;
 import util.ResourceCollection;
 
@@ -14,6 +15,10 @@ public class Bomb extends TileObject {
 
     // Original bomber that placed this bomb
     private Bomber bomber;
+
+    public Bomber getBomber() {
+        return bomber;
+    }
 
     // Animation
     private BufferedImage[][] sprites;
@@ -66,6 +71,7 @@ public class Bomb extends TileObject {
     private void explode() {
         // Snap bombs to the grid on the map before exploding
         this.snapToGrid();
+        SoundPlayer.playBombExplosionSound();
         GameObjectCollection.spawn(new Explosion.Horizontal(this.position, this.firepower, this.pierce));
         GameObjectCollection.spawn(new Explosion.Vertical(this.position, this.firepower, this.pierce));
         this.bomber.restoreAmmo();
