@@ -45,9 +45,9 @@ public class PlayerController implements KeyListener {
         if (this.controls.get(e.getKeyCode()) == Key.right) {
             this.player.toggleRightPressed();
         }
-        if (this.controls.get(e.getKeyCode()) == Key.action) {
+        /*if (this.controls.get(e.getKeyCode()) == Key.action) {
             this.player.toggleActionPressed();
-        }
+        }*/
     }
 
     /**

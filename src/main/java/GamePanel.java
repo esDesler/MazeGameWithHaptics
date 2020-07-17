@@ -1,4 +1,6 @@
 import Haptics.Haptics;
+import MazeCreator.MazeCreator;
+import Sounds.SoundPlayer;
 import gameobjects.Bomber;
 import gameobjects.GameObject;
 import gameobjects.Powerup;
@@ -46,10 +48,9 @@ public class GamePanel extends JPanel implements Runnable {
     private ArrayList<ArrayList<String>> mapLayout;
     private BufferedReader bufferedReader;
 
-    private HashMap<Integer, Key> controls1;
-    private HashMap<Integer, Key> controls2;
-    private HashMap<Integer, Key> controls3;
-    private HashMap<Integer, Key> controls4;
+    private MazeCreator mazeCreator;
+
+    private HashMap<Integer, Key> controls;
 
     private static final double SOFTWALL_RATE = 0.825;
 
@@ -64,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.bg = ResourceCollection.Images.BACKGROUND.getImage();
         this.loadMapFile(filename);
         this.addKeyListener(new GameController(this));
+        mazeCreator = new MazeCreator();
     }
 
     /**
@@ -73,13 +75,19 @@ public class GamePanel extends JPanel implements Runnable {
         this.resetDelay = 0;
         GameObjectCollection.init();
         this.gameHUD = new GameHUD();
-        this.generateMap();
+        this.createMap();
+        this.buildMap();
         this.gameHUD.init();
         this.setPreferredSize(new Dimension(this.mapWidth * 32, (this.mapHeight * 32) + GameWindow.HUD_HEIGHT));
         System.gc();
         this.running = true;
-        new Thread(new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1))).start();
+        SoundPlayer.playGameStartSound();
+        //new Thread(new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1))).start();
         //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
+    }
+
+    private void createMap() {
+        mapLayout = mazeCreator.createMaze();
     }
 
     /**
@@ -118,16 +126,16 @@ public class GamePanel extends JPanel implements Runnable {
      * Generate the map given the map file. The map is grid based and each tile is 32x32.
      * Create game objects depending on the string.
      */
-    private void generateMap() {
+    private void buildMap() {
         // Map dimensions
         this.mapWidth = mapLayout.get(0).size();
         this.mapHeight = mapLayout.size();
         panelWidth = this.mapWidth * 32;
         panelHeight = this.mapHeight * 32;
 
-        this.world = new BufferedImage(this.mapWidth * 32, this.mapHeight * 32, BufferedImage.TYPE_INT_RGB);
+        this.world = new BufferedImage(panelWidth, panelHeight, BufferedImage.TYPE_INT_RGB);
 
-        // Generate entire map
+        // Build entire map
         for (int y = 0; y < this.mapHeight; y++) {
             for (int x = 0; x < this.mapWidth; x++) {
                 switch (mapLayout.get(y).get(x)) {
@@ -162,37 +170,14 @@ public class GamePanel extends JPanel implements Runnable {
                     case ("1"):     // Player 1; Bomber
                         BufferedImage[][] sprMapP1 = ResourceCollection.SpriteMaps.PLAYER_1.getSprites();
                         Bomber player1 = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP1, 1);
-                        PlayerController playerController1 = new PlayerController(player1, this.controls1);
+                        PlayerController playerController1 = new PlayerController(player1, this.controls);
                         this.addKeyListener(playerController1);
-                        this.gameHUD.assignPlayer(player1, 0);
+                        this.gameHUD.assignPlayer(player1);
                         GameObjectCollection.spawn(player1);
                         break;
 
-                    case ("2"):     // Player 2; Bomber
-                        BufferedImage[][] sprMapP2 = ResourceCollection.SpriteMaps.PLAYER_2.getSprites();
-                        Bomber player2 = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP2, 2);
-                        PlayerController playerController2 = new PlayerController(player2, this.controls2);
-                        this.addKeyListener(playerController2);
-                        this.gameHUD.assignPlayer(player2, 1);
-                        GameObjectCollection.spawn(player2);
-                        break;
-
-                    case ("3"):     // Player 3; Bomber
-                        BufferedImage[][] sprMapP3 = ResourceCollection.SpriteMaps.PLAYER_3.getSprites();
-                        Bomber player3 = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP3, 3);
-                        PlayerController playerController3 = new PlayerController(player3, this.controls3);
-                        this.addKeyListener(playerController3);
-                        this.gameHUD.assignPlayer(player3, 2);
-                        GameObjectCollection.spawn(player3);
-                        break;
-
-                    case ("4"):     // Player 4; Bomber
-                        BufferedImage[][] sprMapP4 = ResourceCollection.SpriteMaps.PLAYER_4.getSprites();
-                        Bomber player4 = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP4, 4);
-                        PlayerController playerController4 = new PlayerController(player4, this.controls4);
-                        this.addKeyListener(playerController4);
-                        this.gameHUD.assignPlayer(player4, 3);
-                        GameObjectCollection.spawn(player4);
+                    case ("C"):
+                        GameObjectCollection.spawn(new Powerup(new Point2D.Float(x * 32, y * 32), Powerup.Type.Checkpoint));
                         break;
 
                     case ("PB"):    // Powerup Bomb
@@ -241,38 +226,14 @@ public class GamePanel extends JPanel implements Runnable {
      * Initialize default key bindings for all players.
      */
     private void setControls() {
-        this.controls1 = new HashMap<>();
-        this.controls2 = new HashMap<>();
-        this.controls3 = new HashMap<>();
-        this.controls4 = new HashMap<>();
+        this.controls = new HashMap<>();
 
-        // Set Player 1 controls
-        this.controls1.put(KeyEvent.VK_UP, Key.up);
-        this.controls1.put(KeyEvent.VK_DOWN, Key.down);
-        this.controls1.put(KeyEvent.VK_LEFT, Key.left);
-        this.controls1.put(KeyEvent.VK_RIGHT, Key.right);
-        this.controls1.put(KeyEvent.VK_SLASH, Key.action);
-
-        // Set Player 2 controls
-        this.controls2.put(KeyEvent.VK_W, Key.up);
-        this.controls2.put(KeyEvent.VK_S, Key.down);
-        this.controls2.put(KeyEvent.VK_A, Key.left);
-        this.controls2.put(KeyEvent.VK_D, Key.right);
-        this.controls2.put(KeyEvent.VK_E, Key.action);
-
-        // Set Player 3 controls
-        this.controls3.put(KeyEvent.VK_T, Key.up);
-        this.controls3.put(KeyEvent.VK_G, Key.down);
-        this.controls3.put(KeyEvent.VK_F, Key.left);
-        this.controls3.put(KeyEvent.VK_H, Key.right);
-        this.controls3.put(KeyEvent.VK_Y, Key.action);
-
-        // Set Player 4 controls
-        this.controls4.put(KeyEvent.VK_I, Key.up);
-        this.controls4.put(KeyEvent.VK_K, Key.down);
-        this.controls4.put(KeyEvent.VK_J, Key.left);
-        this.controls4.put(KeyEvent.VK_L, Key.right);
-        this.controls4.put(KeyEvent.VK_O, Key.action);
+        // Set Player controls
+        this.controls.put(KeyEvent.VK_UP, Key.up);
+        this.controls.put(KeyEvent.VK_DOWN, Key.down);
+        this.controls.put(KeyEvent.VK_LEFT, Key.left);
+        this.controls.put(KeyEvent.VK_RIGHT, Key.right);
+        this.controls.put(KeyEvent.VK_SPACE, Key.action);
     }
 
     /**
@@ -292,10 +253,11 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Reset only the map, keeping the score
      */
-    private void resetMap() {
+    void resetMap() {
         GameObjectCollection.init();
-        this.generateMap();
+        this.buildMap();
         System.gc();
+        SoundPlayer.playGameStartSound();
     }
 
     public void addNotify() {
@@ -399,7 +361,7 @@ public class GamePanel extends JPanel implements Runnable {
             // Checking size of array list because when a bomber dies, they do not immediately get deleted
             // This makes it so that the next round doesn't start until the winner is the only bomber object on the map
             if (GameObjectCollection.bomberObjects.size() <= 1) {
-                this.resetMap();
+                this.generateNewMap();
                 this.gameHUD.matchSet = false;
             }
         }
@@ -411,6 +373,13 @@ public class GamePanel extends JPanel implements Runnable {
             Thread.sleep(1000 / 144);
         } catch (InterruptedException ignored) {
         }
+    }
+
+    private void generateNewMap() {
+        GameObjectCollection.init();
+        this.createMap();
+        this.buildMap();
+        System.gc();
     }
 
     @Override
@@ -434,16 +403,11 @@ public class GamePanel extends JPanel implements Runnable {
             for (int j = 0; j < GameObjectCollection.gameObjects.get(i).size(); j++) {
                 GameObject obj = GameObjectCollection.gameObjects.get(i).get(j);
                 obj.drawImage(this.buffer);
-//                obj.drawCollider(this.buffer);
             }
         }
 
         // Draw HUD
-        int infoBoxWidth = panelWidth / 4;
         g2.drawImage(this.gameHUD.getP1info(), 0, 0, null);
-        g2.drawImage(this.gameHUD.getP2info(), infoBoxWidth, 0, null);
-        g2.drawImage(this.gameHUD.getP3info(), infoBoxWidth * 2, 0, null);
-        g2.drawImage(this.gameHUD.getP4info(), infoBoxWidth * 3, 0, null);
 
         // Draw game world offset by the HUD
         g2.drawImage(this.world, 0, GameWindow.HUD_HEIGHT, null);
@@ -519,6 +483,15 @@ class GameController implements KeyListener {
             if (this.gamePanel.resetDelay >= 20) {
                 System.out.println("F5 key pressed: Resetting game");
                 this.gamePanel.resetGame();
+            }
+        }
+
+        // Reset map
+        // Delay prevents resetting too fast which causes the game to crash
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (this.gamePanel.resetDelay >= 20) {
+                System.out.println("Space pressed: Resetting map");
+                this.gamePanel.resetMap();
             }
         }
     }

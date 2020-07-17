@@ -18,10 +18,6 @@ public class GameObjectCollection {
 
     public static volatile List<List<? extends GameObject>> gameObjects;
 
-    public static List<List<? extends GameObject>> getGameObjects() {
-        return new ArrayList<>(gameObjects);
-    }
-
     // Tile objects are bombs, walls, and powerups
     public static ArrayList<TileObject> tileObjects;
     public static ArrayList<Explosion> explosionObjects;
@@ -59,12 +55,6 @@ public class GameObjectCollection {
     /**
      * Sort object lists by y position. Used to draw objects in order according to y position.
      */
-    public static void sortTileObjects() {
-        tileObjects.sort(Comparator.comparing(GameObject::getPositionY));
-    }
-    public static void sortExplosionObjects() {
-        explosionObjects.sort(Comparator.comparing(GameObject::getPositionY));
-    }
     public static void sortBomberObjects() {
         bomberObjects.sort(Comparator.comparing(GameObject::getPositionY));
     }

@@ -17,6 +17,7 @@ public class SoundPlayer {
     private static AudioClip hardWallCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/hardWallCollision.wav").toString());
     private static AudioClip softWallCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/softWallCollision.wav").toString());
     private static AudioClip bombCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombCollision.wav").toString());
+    private static AudioClip gameStart = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart.wav").toString());
 
     public static void playBombExplosionSound() {
         bombExplosion.play();
@@ -63,4 +64,9 @@ public class SoundPlayer {
             lastTimeBomb = currentTime;
         }
     }
+
+    public static void playGameStartSound() {
+        gameStart.play();
+    }
+
 }

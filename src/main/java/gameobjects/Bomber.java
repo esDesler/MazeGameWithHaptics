@@ -38,6 +38,8 @@ public class Bomber extends Player {
     private boolean pierce;
     private boolean kick;
 
+    private boolean hasWon;
+
     /**
      * Constructs a bomber at position with a two-dimensional array of sprites.
      * @param position Coordinates of this object in the game world
@@ -295,4 +297,11 @@ public class Bomber extends Player {
         collidingObj.destroy();
     }
 
+    public void setHasWon(boolean hasWon) {
+        this.hasWon = hasWon;
+    }
+
+    public boolean isHasWon() {
+        return hasWon;
+    }
 }

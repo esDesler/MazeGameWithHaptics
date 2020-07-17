@@ -23,7 +23,8 @@ public class ResourceCollection {
         POWER_SPEED,
         POWER_PIERCE,
         POWER_KICK,
-        POWER_TIMER;
+        POWER_TIMER,
+        CHECKPOINT;
 
         private BufferedImage image = null;
 
@@ -89,6 +90,7 @@ public class ResourceCollection {
             Images.POWER_PIERCE.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_pierce.png"));
             Images.POWER_KICK.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_kick.png"));
             Images.POWER_TIMER.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/power_timer.png"));
+            Images.CHECKPOINT.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/checkpoint.png"));
 
             SpriteMaps.PLAYER_1.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomber1.png"));
             SpriteMaps.PLAYER_2.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomber2.png"));

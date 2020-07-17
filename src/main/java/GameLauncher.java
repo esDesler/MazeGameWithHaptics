@@ -71,7 +71,6 @@ class GameWindow extends JFrame {
     public void update(int fps, int ticks) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalDateTime time = LocalDateTime.now();
-        //System.out.println("[" + dtf.format(time) + "]" + " FPS: " + fps + ", Ticks: " + ticks);
         GameLauncher.window.setTitle(GameWindow.TITLE + " | " + "FPS: " + fps + ", Ticks: " + ticks);
     }
 

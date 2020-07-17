@@ -14,6 +14,14 @@ import java.util.Random;
 public class Powerup extends TileObject {
 
     public enum Type {
+        // Reach checkpoint
+        Checkpoint(ResourceCollection.Images.CHECKPOINT.getImage()) {
+            @Override
+            protected void grantBonus(Bomber bomber) {
+                bomber.setHasWon(true);
+            }
+        },
+
         // Additional bomb ammo
         Bomb(ResourceCollection.Images.POWER_BOMB.getImage()) {
             @Override
