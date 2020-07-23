@@ -54,6 +54,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     private static final double SOFTWALL_RATE = 0.825;
 
+    private final int mazeSize = 13;
+
     /**
      * Construct game panel and load in a map file.
      * @param filename Name of the map file
@@ -65,7 +67,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.bg = ResourceCollection.Images.BACKGROUND.getImage();
         this.loadMapFile(filename);
         this.addKeyListener(new GameController(this));
-        mazeCreator = new MazeCreator();
+        mazeCreator = new MazeCreator(mazeSize);
     }
 
     /**
@@ -75,8 +77,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.resetDelay = 0;
         GameObjectCollection.init();
         this.gameHUD = new GameHUD();
-        this.createMap();
-        this.buildMap();
+        this.createTheMazeStructure();
+        this.buildTheMapVisually();
         this.gameHUD.init();
         this.setPreferredSize(new Dimension(this.mapWidth * 32, (this.mapHeight * 32) + GameWindow.HUD_HEIGHT));
         System.gc();
@@ -86,7 +88,7 @@ public class GamePanel extends JPanel implements Runnable {
         //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
     }
 
-    private void createMap() {
+    private void createTheMazeStructure() {
         mapLayout = mazeCreator.createMaze();
     }
 
@@ -126,7 +128,7 @@ public class GamePanel extends JPanel implements Runnable {
      * Generate the map given the map file. The map is grid based and each tile is 32x32.
      * Create game objects depending on the string.
      */
-    private void buildMap() {
+    private void buildTheMapVisually() {
         // Map dimensions
         this.mapWidth = mapLayout.get(0).size();
         this.mapHeight = mapLayout.size();
@@ -255,7 +257,7 @@ public class GamePanel extends JPanel implements Runnable {
      */
     void resetMap() {
         GameObjectCollection.init();
-        this.buildMap();
+        this.buildTheMapVisually();
         System.gc();
         SoundPlayer.playGameStartSound();
     }
@@ -377,8 +379,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void generateNewMap() {
         GameObjectCollection.init();
-        this.createMap();
-        this.buildMap();
+        this.createTheMazeStructure();
+        this.buildTheMapVisually();
         System.gc();
     }
 

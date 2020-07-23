@@ -1,157 +1,153 @@
 package MazeCreator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class MazeCreator {
-
-    private ArrayList<ArrayList<String>> mapLayout;
     private Random random;
 
-    public MazeCreator() {
+    private Maze maze;
+
+    public MazeCreator(int mazeSize) {
+        this.maze = new Maze(mazeSize);
     }
 
     public ArrayList<ArrayList<String>> createMaze() {
         random = new Random();
-        mapLayout = new ArrayList<>();
-        for (int i = 0; i < 13; i++) {
-            mapLayout.add(new ArrayList<>(Arrays.asList("H,H,H,H,H,H,H,H,H,H,H,H,H".split(","))));
-        }
-        int centerV = mapLayout.size() / 2;
-        int centerH = mapLayout.get(0).size() / 2;
 
-        mapLayout.get(centerV).set(centerH, "1");
+        maze.setCenter("1");
 
-        placeRandomCheckpoint(mapLayout.size() - 3, mapLayout.get(0).size() - 3);
-        String headOfPath = createRandomPath(centerV, centerH);
-        createCircularPathToGoalTile(headOfPath);
-        return mapLayout;
+        createLevelOneMaze();
+        //createLevelTwoMaze();
+        return maze.toMapLayout();
     }
 
-    private void createCircularPathToGoalTile(String startPosition) {
+    /*private void createLevelTwoMaze() {
+        maze.placeRandomGoalTile();
+
+        int i = centerV;
+        int j = centerH;
+        String posOfHead = i + " " + j;
+
+        for (int n = 0; n < 20; n++) {
+            System.out.println(posOfHead);
+            try {
+                posOfHead = createRandomPath(i, j, 4);
+            } catch (ArrayIndexOutOfBoundsException ignore) {
+            }
+            String[] position = posOfHead.split(" ");
+            i = Integer.parseInt(position[0]);
+            j = Integer.parseInt(position[1]);
+        }
+
+    }*/
+
+    private void createLevelOneMaze() {
+        maze.placeRandomGoalTile();
+        MazeTile headOfPath = createRandomPath(maze.getCenter(), maze.getCenter(), maze.getMazeSize() / 2);
+        createCircularPathToGoalTile(headOfPath);
+    }
+
+    private void createCircularPathToGoalTile(MazeTile startPosition) {
         if (random.nextInt(2) == 0) findAndMakeRightCircularPath(startPosition);
         else findAndMakeLeftCircularPath(startPosition);
     }
 
-    private void findAndMakeLeftCircularPath(String startPosition) {
-        ArrayList<String> completeCircularPath = createOuterRingOfMapArray();
+    private void findAndMakeLeftCircularPath(MazeTile startPosition) {
+        ArrayList<MazeTile> completeCircularPath = maze.createOuterRingOfMapArray();
 
         int i = completeCircularPath.indexOf(startPosition);
         int size = completeCircularPath.size();
-        String position = startPosition;
+        MazeTile position = startPosition;
 
-        while (!positionContainsGoalTile(position)) {
+        while (!position.isGoalTile()) {
             fillPositionOnMap(position);
             position = completeCircularPath.get(i--);
             if (i < 0) i = size - 1;
         }
     }
 
-    private void fillPositionOnMap(String position) {
-        String[] iAndJ = position.split(" ");
-        int i = Integer.parseInt(iAndJ[0]);
-        int j = Integer.parseInt(iAndJ[1]);
-        mapLayout.get(i).set(j, "-1");
+    private void fillPositionOnMap(MazeTile position) {
+        maze.updatePosition(position.getI(), position.getJ(), "-1");
     }
 
-    private void findAndMakeRightCircularPath(String startPosition) {
-        ArrayList<String> completeCircularPath = createOuterRingOfMapArray();
-
+    private void findAndMakeRightCircularPath(MazeTile startPosition) {
+        ArrayList<MazeTile> completeCircularPath = maze.createOuterRingOfMapArray();
         int i = completeCircularPath.indexOf(startPosition);
         int size = completeCircularPath.size();
-        String position = startPosition;
+        MazeTile position = startPosition;
 
-        while (!positionContainsGoalTile(position)) {
+        while (!position.isGoalTile()) {
             fillPositionOnMap(position);
-            position = completeCircularPath.get((i++) % size);
+            position = completeCircularPath.get((++i) % size);
         }
     }
 
-    private boolean positionContainsGoalTile(String position) {
-        String[] iAndJ = position.split(" ");
-        int i = Integer.parseInt(iAndJ[0]);
-        int j = Integer.parseInt(iAndJ[1]);
-        return mapLayout.get(i).get(j).equals("C");
-    }
-
-    private ArrayList<String> createOuterRingOfMapArray() {
-        ArrayList<String> outerRingOfMap = new ArrayList<>();
-        int maxH = mapLayout.get(0).size() - 2;
-        int maxV = mapLayout.size() - 2;
-
-        for (int j = 1; j < maxH; j++) outerRingOfMap.add("1 " + j);
-        for (int i = 1; i < maxV; i++) outerRingOfMap.add(i + " " + maxH);
-        for (int j = maxH; j > 1; j--) outerRingOfMap.add(maxV + " " + j);
-        for (int i = maxV; i > 1; i--) outerRingOfMap.add(i + " 1");
-
-        return outerRingOfMap;
-    }
-
-    private String createRandomPath(int startPosV, int startPosH) {
+    private MazeTile createRandomPath(int startPosV, int startPosH, int distance) {
         int direction = random.nextInt(4);
-
         switch (direction) {
             case 0:
-                return createUpPath(startPosV, startPosH, mapLayout.size() / 2);
+                return createUpPath(startPosV, startPosH, distance);
             case 1:
-                return createDownPath(startPosV, startPosH, mapLayout.size() / 2);
+                return createDownPath(startPosV, startPosH, distance);
             case 2:
-                return createLeftPath(startPosV, startPosH, mapLayout.get(0).size() / 2);
+                return createLeftPath(startPosV, startPosH, distance);
             case 3:
-                return createRightPath(startPosV, startPosH, mapLayout.get(0).size() / 2);
+                return createRightPath(startPosV, startPosH, distance);
             default:
                 throw new IllegalStateException("Unexpected value: " + direction);
         }
     }
 
-    private String createRightPath(int startPosV, int startPosH, int distance) {
-        String headOfPath = "";
-        for (int j = startPosH + 1; j < startPosH + distance; j++) {
-            mapLayout.get(startPosV).set(j, "-1");
-            headOfPath = startPosV + " " + j;
+    private MazeTile createRightPath(int startPosV, int startPosH, int distance) {
+        MazeTile headOfPath = new MazeTile(startPosV, startPosH);
+        if (maze.getMazeSize() < startPosH + distance) return headOfPath;
+        for (int j = startPosH + 1; j <= startPosH + distance; j++) {
+            if (headOfPath.isGoalTile()) break;
+            maze.updatePosition(startPosV, j, "-1");
+            headOfPath = maze.getTile(startPosV, j);
         }
+        return headOfPath;
+    }
+
+    private MazeTile createLeftPath(int startPosV, int startPosH, int distance) {
+        MazeTile headOfPath = new MazeTile(startPosV, startPosH);
+        if (startPosH - distance < 0) return headOfPath;
+        for (int j = startPosH - 1; j >= startPosH - distance; j--) {
+            if (headOfPath.isGoalTile()) break;
+            maze.updatePosition(startPosV, j, "-1");
+            headOfPath = maze.getTile(startPosV, j);
+        }
+        return headOfPath;
+    }
+
+    private MazeTile createDownPath(int startPosV, int startPosH, int distance) {
+        MazeTile headOfPath = new MazeTile(startPosV, startPosH);
+        if (maze.getMazeSize() < startPosV + distance) return headOfPath;
+        for (int i = startPosV + 1; i <= startPosH + distance; i++) {
+            if (headOfPath.isGoalTile()) break;
+            maze.updatePosition(i, startPosH, "-1");
+            headOfPath = maze.getTile(i, startPosH);
+        }
+        return headOfPath;
+    }
+
+    private MazeTile createUpPath(int startPosV, int startPosH, int distance) {
+        MazeTile headOfPath = new MazeTile(startPosV, startPosH);
+        if (startPosV - distance < 0) return headOfPath;
+        for (int i = startPosV - 1; i >= startPosH - distance; i--) {
+            if (headOfPath.isGoalTile()) break;
+            maze.updatePosition(i, startPosH, "-1");
+            headOfPath = maze.getTile(i, startPosH);
+        }
+
         return headOfPath;
     }
 
     private void printMap() {
+        ArrayList<ArrayList<String>> mapLayout = maze.toMapLayout();
         for (ArrayList<String> mapLine : mapLayout) {
             System.out.println(mapLine);
         }
-    }
-
-    private String createLeftPath(int startPosV, int startPosH, int distance) {
-        String headOfPath = "";
-        for (int j = startPosH - 1; j > startPosH - distance; j--) {
-            mapLayout.get(startPosV).set(j, "-1");
-            headOfPath = startPosV + " " + j;
-        }
-        return headOfPath;
-    }
-
-    private String createDownPath(int startPosV, int startPosH, int distance) {
-        String headOfPath = "";
-        for (int i = startPosV + 1; i < startPosH + distance; i++) {
-            mapLayout.get(i).set(startPosH, "-1");
-            headOfPath = i + " " + startPosH;
-        }
-        return headOfPath;
-    }
-
-    private String createUpPath(int startPosV, int startPosH, int distance) {
-        String headOfPath = "";
-        for (int i = startPosV - 1; i > startPosH - distance; i--) {
-            mapLayout.get(i).set(startPosH, "-1");
-            headOfPath = i + " " + startPosH;
-        }
-        return headOfPath;
-    }
-
-    private void placeRandomCheckpoint(int mapSizeV, int mapSizeH) {
-        // (i,j) can be in either of the four corners
-        int i = random.nextInt(2) * mapSizeV + 1;
-        int j = random.nextInt(2) * mapSizeH + 1;
-
-        mapLayout.get(i).set(j, "C");
     }
 }
