@@ -1,12 +1,11 @@
 package MazeCreator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class Maze {
 
-    private final MazeTile[][] maze;
+    private MazeTile[][] maze;
     private final int viewSize;
     private final int mazeSize;
     private Random random;
@@ -15,14 +14,16 @@ public class Maze {
         this.random = new Random();
         this.viewSize = mazeSize;
         this.maze = new MazeTile[mazeSize][mazeSize];
+        initiateMaze();
+        this.mazeSize = viewSize - 2;
+    }
 
-        for (int i = 0; i < mazeSize; i++) {
-            for (int j = 0; j < mazeSize; j++) {
+    private void initiateMaze() {
+        for (int i = 0; i < viewSize; i++) {
+            for (int j = 0; j < viewSize; j++) {
                 this.maze[i][j] = new MazeTile(i, j);
             }
         }
-
-        this.mazeSize = viewSize - 2;
     }
 
     public int getMazeSize() {
@@ -79,13 +80,23 @@ public class Maze {
     @Override
     public String toString() {
         StringBuilder maze = new StringBuilder();
-        for (int i = 0; i < mazeSize; i++) {
-            for (int j = 0; j < mazeSize; j++) {
-                maze.append(this.maze[i][j].getTileElement()).append(" ");
+        for (int i = 0; i < viewSize; i++) {
+            for (int j = 0; j < viewSize; j++) {
+                maze.append(this.maze[i][j].getTileElement()).append("\t");
             }
             maze.append("\n");
         }
         return maze.toString();
+    }
+
+    public void addPath(Path path) {
+        for (MazeTile mazeTile : path.getPath()) {
+            this.maze[mazeTile.getI()][mazeTile.getJ()] = mazeTile;
+        }
+    }
+
+    public void clearMaze() {
+        initiateMaze();
     }
 
     //Distance between mazeTiles
