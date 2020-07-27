@@ -1,6 +1,7 @@
 package MazeCreator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Maze {
@@ -75,7 +76,17 @@ public class Maze {
         return outerRingOfMap;
     }
 
-    //Extract string csv format
+    @Override
+    public String toString() {
+        StringBuilder maze = new StringBuilder();
+        for (int i = 0; i < mazeSize; i++) {
+            for (int j = 0; j < mazeSize; j++) {
+                maze.append(this.maze[i][j].getTileElement()).append(" ");
+            }
+            maze.append("\n");
+        }
+        return maze.toString();
+    }
 
     //Distance between mazeTiles
 }

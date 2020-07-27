@@ -64,4 +64,8 @@ public class MazeTile {
                 ", tileElement='" + tileElement + '\'' +
                 '}';
     }
+
+    public boolean isPlayer() {
+        return tileElement.equals("1");
+    }
 }

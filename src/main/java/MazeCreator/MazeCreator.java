@@ -17,30 +17,20 @@ public class MazeCreator {
 
         maze.setCenter("1");
 
-        createLevelOneMaze();
-        //createLevelTwoMaze();
+        //createLevelOneMaze();
+        createLevelTwoMaze();
         return maze.toMapLayout();
     }
 
-    /*private void createLevelTwoMaze() {
+    private void createLevelTwoMaze() {
         maze.placeRandomGoalTile();
 
-        int i = centerV;
-        int j = centerH;
-        String posOfHead = i + " " + j;
+        MazeTile posOfHead = maze.getTile(maze.getCenter(), maze.getCenter());
 
-        for (int n = 0; n < 20; n++) {
-            System.out.println(posOfHead);
-            try {
-                posOfHead = createRandomPath(i, j, 4);
-            } catch (ArrayIndexOutOfBoundsException ignore) {
-            }
-            String[] position = posOfHead.split(" ");
-            i = Integer.parseInt(position[0]);
-            j = Integer.parseInt(position[1]);
+        while (!posOfHead.isGoalTile()) {
+            posOfHead = createRandomPath(posOfHead.getI(), posOfHead.getJ(), 1);
         }
-
-    }*/
+    }
 
     private void createLevelOneMaze() {
         maze.placeRandomGoalTile();
@@ -101,44 +91,60 @@ public class MazeCreator {
 
     private MazeTile createRightPath(int startPosV, int startPosH, int distance) {
         MazeTile headOfPath = new MazeTile(startPosV, startPosH);
-        if (maze.getMazeSize() < startPosH + distance) return headOfPath;
         for (int j = startPosH + 1; j <= startPosH + distance; j++) {
+            try {
+                headOfPath = maze.getTile(startPosV, j);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                break;
+            }
             if (headOfPath.isGoalTile()) break;
+            if (headOfPath.isPlayer()) return maze.getTile(startPosV, j - 1);
             maze.updatePosition(startPosV, j, "-1");
-            headOfPath = maze.getTile(startPosV, j);
         }
         return headOfPath;
     }
 
     private MazeTile createLeftPath(int startPosV, int startPosH, int distance) {
         MazeTile headOfPath = new MazeTile(startPosV, startPosH);
-        if (startPosH - distance < 0) return headOfPath;
         for (int j = startPosH - 1; j >= startPosH - distance; j--) {
+            try {
+                headOfPath = maze.getTile(startPosV, j);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                break;
+            }
             if (headOfPath.isGoalTile()) break;
+            if (headOfPath.isPlayer()) return maze.getTile(startPosV, j + 1);
             maze.updatePosition(startPosV, j, "-1");
-            headOfPath = maze.getTile(startPosV, j);
         }
         return headOfPath;
     }
 
     private MazeTile createDownPath(int startPosV, int startPosH, int distance) {
         MazeTile headOfPath = new MazeTile(startPosV, startPosH);
-        if (maze.getMazeSize() < startPosV + distance) return headOfPath;
         for (int i = startPosV + 1; i <= startPosH + distance; i++) {
+            try {
+                headOfPath = maze.getTile(i, startPosH);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                break;
+            }
             if (headOfPath.isGoalTile()) break;
+            if (headOfPath.isPlayer()) return maze.getTile(i - 1, startPosH);
             maze.updatePosition(i, startPosH, "-1");
-            headOfPath = maze.getTile(i, startPosH);
         }
         return headOfPath;
     }
 
     private MazeTile createUpPath(int startPosV, int startPosH, int distance) {
         MazeTile headOfPath = new MazeTile(startPosV, startPosH);
-        if (startPosV - distance < 0) return headOfPath;
-        for (int i = startPosV - 1; i >= startPosH - distance; i--) {
+        for (int i = startPosV - 1; i >= startPosV - distance; i--) {
+            try {
+                headOfPath = maze.getTile(i, startPosH);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                break;
+            }
             if (headOfPath.isGoalTile()) break;
+            if (headOfPath.isPlayer()) return maze.getTile(i + 1, startPosH);
             maze.updatePosition(i, startPosH, "-1");
-            headOfPath = maze.getTile(i, startPosH);
         }
 
         return headOfPath;
