@@ -49,8 +49,9 @@ public class GameHUD {
      * affecting their score since the score was already updated.
      */
     public void updateScore() {
-        if (player.isHasWon()) {
+        if (player != null && player.isHasWon()) {
             playerScore++;
+            player.setHasWon(false);
             this.matchSet = true;
         }
     }

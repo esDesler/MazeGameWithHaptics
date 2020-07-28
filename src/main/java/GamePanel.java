@@ -84,6 +84,8 @@ public class GamePanel extends JPanel implements Runnable {
         System.gc();
         this.running = true;
         SoundPlayer.playGameStartSound();
+        Statistics.incrementTriesOnCurrentMazeLvl1();
+        Statistics.incrementTotalPlayedMazesLvl1();
         //new Thread(new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1))).start();
         //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
     }
@@ -249,7 +251,7 @@ public class GamePanel extends JPanel implements Runnable {
      * When F5 is pressed, reset game object collection, collect garbage, reinitialize game panel, reload map
      */
     void resetGame() {
-        this.init();
+        generateNewMap();
     }
 
     /**
@@ -260,6 +262,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.buildTheMapVisually();
         System.gc();
         SoundPlayer.playGameStartSound();
+        Statistics.incrementTriesOnCurrentMazeLvl1();
     }
 
     public void addNotify() {
@@ -325,7 +328,7 @@ public class GamePanel extends JPanel implements Runnable {
         GameObjectCollection.sortBomberObjects();
         // Loop through every game object arraylist
         for (int list = 0; list < GameObjectCollection.gameObjects.size(); list++) {
-            for (int objIndex = 0; objIndex < GameObjectCollection.gameObjects.get(list).size(); ) {
+            for (int objIndex = 0; objIndex < GameObjectCollection.gameObjects.get(list).size(); objIndex++) {
                 GameObject obj = GameObjectCollection.gameObjects.get(list).get(objIndex);
                 obj.update();
                 if (obj.isDestroyed()) {
@@ -343,13 +346,10 @@ public class GamePanel extends JPanel implements Runnable {
 
                             // Visitor pattern collision handling
                             if (obj.getCollider().intersects(collidingObj.getCollider())) {
-                                // Use one of these
                                 collidingObj.onCollisionEnter(obj);
-//                                obj.onCollisionEnter(collidingObj);
                             }
                         }
                     }
-                    objIndex++;
                 }
             }
         }
@@ -364,6 +364,8 @@ public class GamePanel extends JPanel implements Runnable {
             // This makes it so that the next round doesn't start until the winner is the only bomber object on the map
             if (GameObjectCollection.bomberObjects.size() <= 1) {
                 this.generateNewMap();
+                Statistics.incrementClearedMazesLvl1();
+                System.out.println("Cleared mazes: " + Statistics.getClearedMazesLvl1() + " Total played mazes: " + Statistics.getTotalPlayedMazesLvl1() + " Average tries per maze: " + Statistics.getAverageTriesLvl1());
                 this.gameHUD.matchSet = false;
             }
         }
@@ -382,6 +384,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.createTheMazeStructure();
         this.buildTheMapVisually();
         System.gc();
+        SoundPlayer.playGameStartSound();
+        Statistics.updateAverageTriesLvl1();
+        Statistics.incrementTotalPlayedMazesLvl1();
+        Statistics.resetTriesOnCurrentMazeLvl1();
     }
 
     @Override

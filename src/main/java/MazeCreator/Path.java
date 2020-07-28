@@ -52,7 +52,6 @@ public class Path {
         int size = completeCircularPath.size();
 
         while (!headOfPath.isGoalTile()) {
-            headOfPath.setTileElement("-1");
             path.add(headOfPath);
             headOfPath = completeCircularPath.get((++i) % size);
         }
@@ -69,8 +68,6 @@ public class Path {
 
         int r = random.nextInt(availableDirections.size());
         Direction direction = availableDirections.get(r);
-
-        System.out.println(direction);
 
         int startPosH = headOfPath.getJ();
         int startPosV = headOfPath.getI();
@@ -125,7 +122,6 @@ public class Path {
             headOfPath = maze.getTile(startPosV, j);
             if (headOfPath.isGoalTile()) break;
             else {
-                headOfPath.setTileElement("-1");
                 path.add(headOfPath);
             }
             hasMoved = true;
@@ -139,7 +135,6 @@ public class Path {
             headOfPath = maze.getTile(startPosV, j);
             if (headOfPath.isGoalTile()) break;
             else {
-                headOfPath.setTileElement("-1");
                 path.add(headOfPath);
             }
             hasMoved = true;
@@ -153,7 +148,6 @@ public class Path {
             headOfPath = maze.getTile(i, startPosH);
             if (headOfPath.isGoalTile()) break;
             else {
-                headOfPath.setTileElement("-1");
                 path.add(headOfPath);
             }
             hasMoved = true;
@@ -167,7 +161,6 @@ public class Path {
             headOfPath = maze.getTile(i, startPosH);
             if (headOfPath.isGoalTile()) break;
             else {
-                headOfPath.setTileElement("-1");
                 path.add(headOfPath);
             }
             hasMoved = true;
@@ -184,10 +177,14 @@ public class Path {
         int size = completeCircularPath.size();
 
         while (!headOfPath.isGoalTile()) {
-            headOfPath.setTileElement("-1");
             path.add(headOfPath);
             headOfPath = completeCircularPath.get(i--);
             if (i < 0) i = size - 1;
         }
+    }
+
+    public void reset() {
+        path.clear();
+        headOfPath = maze.getTile(maze.getCenter(), maze.getCenter());
     }
 }

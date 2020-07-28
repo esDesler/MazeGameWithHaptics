@@ -28,14 +28,18 @@ public class MazeCreator {
         Path path = new Path(maze.getTile(maze.getCenter(), maze.getCenter()), null, maze);
 
         //for (int i = 0; i < 30; i++)
-        while (!path.getHeadOfPath().isGoalTile())
-        {
-            path.createRandomPathWithDirection(random.nextInt(4) + 2);
-        }
+        do {
+            path.reset();
+            while (!path.getHeadOfPath().isGoalTile()) {
+                path.createRandomPathWithDirection(random.nextInt(4) + 2);
+            }
+        System.out.println(path.getPath().size());
+        } while (path.getPath().size() < 50 || 150 < path.getPath().size());
+        maze.addPath(path);
     }
 
     private void createLevelOneMaze() {
-        maze.placeRandomGoalTile();
+        maze.placeGoalTileInRandomCorner();
         Path path = new Path(maze.getTile(maze.getCenter(), maze.getCenter()), null, maze);
         path.createRandomPath(maze.getMazeSize() / 2);
         path.createCircularPathToGoalTile(maze.createOuterRingOfMapArray());

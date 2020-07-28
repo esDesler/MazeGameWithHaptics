@@ -46,6 +46,22 @@ public class Maze {
     }
 
     public void placeRandomGoalTile() {
+        int i;
+        int j;
+
+        do {
+            i = random.nextInt(mazeSize - 1) + 1;
+            j = random.nextInt(mazeSize - 1) + 1;
+        } while (distanceFromCenter(i,j) < mazeSize/4);
+
+        maze[i][j].setTileElement("C");
+    }
+
+    private int distanceFromCenter(int i, int j) {
+        return (int) Math.sqrt(Math.pow(i - getCenter(), 2) + Math.pow(j - getCenter(), 2));
+    }
+
+    public void placeGoalTileInRandomCorner() {
         // (i,j) can be in either of the four corners
         int i = random.nextInt(2) * (mazeSize - 1) + 1;
         int j = random.nextInt(2) * (mazeSize - 1) + 1;
@@ -91,6 +107,7 @@ public class Maze {
 
     public void addPath(Path path) {
         for (MazeTile mazeTile : path.getPath()) {
+            mazeTile.setTileElement("-1");
             this.maze[mazeTile.getI()][mazeTile.getJ()] = mazeTile;
         }
     }
@@ -98,6 +115,4 @@ public class Maze {
     public void clearMaze() {
         initiateMaze();
     }
-
-    //Distance between mazeTiles
 }

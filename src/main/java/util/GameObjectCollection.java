@@ -19,9 +19,9 @@ public class GameObjectCollection {
     public static volatile List<List<? extends GameObject>> gameObjects;
 
     // Tile objects are bombs, walls, and powerups
-    public static ArrayList<TileObject> tileObjects;
-    public static ArrayList<Explosion> explosionObjects;
-    public static ArrayList<Bomber> bomberObjects;
+    public static volatile ArrayList<TileObject> tileObjects;
+    public static volatile ArrayList<Explosion> explosionObjects;
+    public static volatile ArrayList<Bomber> bomberObjects;
 
     /**
      * Initialize the collections that will contain all game objects in the game world.
