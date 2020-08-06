@@ -1,7 +1,12 @@
 package Sounds;
 
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 public class SoundPlayer {
 
@@ -9,15 +14,16 @@ public class SoundPlayer {
     private static long lastTimeSoft = 0;
     private static long lastTimeBomb = 0;
 
-    private static AudioClip bombExplosion = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombExplosion.wav").toString());
-    private static AudioClip bombPlacement = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombPlacement.wav").toString());
-    private static AudioClip powerUp = new AudioClip(SoundPlayer.class.getResource("/resources/sound/powerUp.wav").toString());
-    private static AudioClip playerDied = new AudioClip(SoundPlayer.class.getResource("/resources/sound/playerDied.wav").toString());
-    private static AudioClip bombKicked = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombKicked.wav").toString());
-    private static AudioClip hardWallCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/hardWallCollision.wav").toString());
-    private static AudioClip softWallCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/softWallCollision.wav").toString());
-    private static AudioClip bombCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombCollision.wav").toString());
-    private static AudioClip gameStart = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart.wav").toString());
+    private static final AudioClip bombExplosion = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombExplosion.wav").toString());
+    private static final AudioClip bombPlacement = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombPlacement.wav").toString());
+    private static final AudioClip powerUp = new AudioClip(SoundPlayer.class.getResource("/resources/sound/powerUp.wav").toString());
+    private static final AudioClip playerDied = new AudioClip(SoundPlayer.class.getResource("/resources/sound/playerDied.wav").toString());
+    private static final AudioClip bombKicked = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombKicked.wav").toString());
+    private static final AudioClip hardWallCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/hardWallCollision.wav").toString());
+    private static final AudioClip softWallCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/softWallCollision.wav").toString());
+    private static final AudioClip bombCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombCollision.wav").toString());
+    private static final AudioClip gameStart = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart.wav").toString());
+    private static final AudioClip backgroundMusic = new AudioClip(SoundPlayer.class.getResource("/resources/sound/backgroundMusic.wav").toString());
 
     public static void playBombExplosionSound() {
         bombExplosion.play();
@@ -66,7 +72,14 @@ public class SoundPlayer {
     }
 
     public static void playGameStartSound() {
+        gameStart.setVolume(0.3);
         gameStart.play();
+    }
+
+    public static void startBackgroundMusic() {
+        backgroundMusic.setCycleCount(AudioClip.INDEFINITE);
+        backgroundMusic.setVolume(0.05);
+        backgroundMusic.play();
     }
 
 }

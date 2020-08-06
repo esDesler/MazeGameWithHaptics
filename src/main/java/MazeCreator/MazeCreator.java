@@ -12,14 +12,18 @@ public class MazeCreator {
         this.maze = new Maze(mazeSize);
     }
 
-    public ArrayList<ArrayList<String>> createMaze() {
+    public ArrayList<ArrayList<String>> createMaze(int level) {
         maze.clearMaze();
         random = new Random();
 
         maze.setCenter("1");
 
-        //createLevelOneMaze();
-        createLevelTwoMaze();
+        if (level == 1) {
+            createLevelOneMaze();
+        } else {
+            createLevelTwoMaze();
+        }
+
         return maze.toMapLayout();
     }
 
@@ -33,7 +37,6 @@ public class MazeCreator {
             while (!path.getHeadOfPath().isGoalTile()) {
                 path.createRandomPathWithDirection(random.nextInt(4) + 2);
             }
-        System.out.println(path.getPath().size());
         } while (path.getPath().size() < 50 || 150 < path.getPath().size());
         maze.addPath(path);
     }

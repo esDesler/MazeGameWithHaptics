@@ -23,10 +23,10 @@ public class SerialConnector {
 
     void write(String motorData) {
         if (serialPort != null && serialPort.isOpen()) {
-            System.out.println("Writing " + motorData + " to " + serialPort.getSystemPortName() + "...");
+            //System.out.println("Writing " + motorData + " to " + serialPort.getSystemPortName() + "...");
             output.println(motorData);
         } else {
-            System.out.println("Something went wrong in write method...");
+            //System.out.println("Something went wrong in write method...");
         }
     }
 }

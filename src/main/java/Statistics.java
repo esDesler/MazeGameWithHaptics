@@ -2,11 +2,11 @@ public class Statistics {
     private static int clearedMazesLvl1;
     private static int totalPlayedMazesLvl1;
     private static int triesOnCurrentMazeLvl1;
-    private static int averageTriesLvl1;
+    private static double averageTriesLvl1 = 1;
     private static int clearedMazesLvl2;
     private static int totalPlayedMazesLvl2;
     private static int triesOnCurrentMazeLvl2;
-    private static int averageTriesLvl2;
+    private static double averageTriesLvl2;
 
     public static int getClearedMazesLvl1() {
         return clearedMazesLvl1;
@@ -32,12 +32,12 @@ public class Statistics {
         triesOnCurrentMazeLvl1++;
     }
 
-    public static int getAverageTriesLvl1() {
+    public static double getAverageTriesLvl1() {
         return averageTriesLvl1;
     }
 
     public static void updateAverageTriesLvl1() {
-        averageTriesLvl1 = (totalPlayedMazesLvl1 * averageTriesLvl1 + triesOnCurrentMazeLvl1) / (totalPlayedMazesLvl1 + 1);
+        averageTriesLvl1 = (clearedMazesLvl1 * averageTriesLvl1 + triesOnCurrentMazeLvl1) / (clearedMazesLvl1 + 1);
     }
 
     public static int getClearedMazesLvl2() {
@@ -64,11 +64,15 @@ public class Statistics {
         triesOnCurrentMazeLvl2++;
     }
 
-    public static int getAverageTriesLvl2() {
+    public static double getAverageTriesLvl2() {
         return averageTriesLvl2;
     }
 
     public static void incrementAverageTriesLvl2() {
         averageTriesLvl2++;
+    }
+
+    public static int getTriesOnCurrentMazeLvl1() {
+        return triesOnCurrentMazeLvl1;
     }
 }

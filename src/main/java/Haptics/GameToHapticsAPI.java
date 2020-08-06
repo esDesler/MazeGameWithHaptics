@@ -23,8 +23,8 @@ public class GameToHapticsAPI {
     }
 
     private void initializeMotors() {
-        motors = new ArrayList<Motor>();
-        for (int i = 0; i < 10; i++) {
+        motors = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
             motors.add(new Motor("M" + i));
         }
     }

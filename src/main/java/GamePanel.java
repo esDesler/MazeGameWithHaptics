@@ -5,6 +5,7 @@ import gameobjects.Bomber;
 import gameobjects.GameObject;
 import gameobjects.Powerup;
 import gameobjects.Wall;
+import javafx.embed.swing.JFXPanel;
 import util.GameObjectCollection;
 import util.Key;
 import util.ResourceCollection;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * JPanel that contains the entire game and game loop logic.
@@ -49,6 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedReader bufferedReader;
 
     private MazeCreator mazeCreator;
+    int level = 1;
 
     private HashMap<Integer, Key> controls;
 
@@ -61,6 +64,17 @@ public class GamePanel extends JPanel implements Runnable {
      * @param filename Name of the map file
      */
     GamePanel(String filename) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        SwingUtilities.invokeLater(() -> {
+            new JFXPanel(); // initializes JavaFX environment
+            latch.countDown();
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         this.setFocusable(true);
         this.requestFocus();
         this.setControls();
@@ -83,15 +97,15 @@ public class GamePanel extends JPanel implements Runnable {
         this.setPreferredSize(new Dimension(this.mapWidth * 32, (this.mapHeight * 32) + GameWindow.HUD_HEIGHT));
         System.gc();
         this.running = true;
+        SoundPlayer.startBackgroundMusic();
         SoundPlayer.playGameStartSound();
         Statistics.incrementTriesOnCurrentMazeLvl1();
-        Statistics.incrementTotalPlayedMazesLvl1();
-        //new Thread(new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1))).start();
+        new Thread(new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(0))).start();
         //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
     }
 
     private void createTheMazeStructure() {
-        mapLayout = mazeCreator.createMaze();
+        mapLayout = mazeCreator.createMaze(level);
     }
 
     /**
@@ -363,9 +377,9 @@ public class GamePanel extends JPanel implements Runnable {
             // Checking size of array list because when a bomber dies, they do not immediately get deleted
             // This makes it so that the next round doesn't start until the winner is the only bomber object on the map
             if (GameObjectCollection.bomberObjects.size() <= 1) {
-                this.generateNewMap();
+                Statistics.updateAverageTriesLvl1();
                 Statistics.incrementClearedMazesLvl1();
-                System.out.println("Cleared mazes: " + Statistics.getClearedMazesLvl1() + " Total played mazes: " + Statistics.getTotalPlayedMazesLvl1() + " Average tries per maze: " + Statistics.getAverageTriesLvl1());
+                this.generateNewMap();
                 this.gameHUD.matchSet = false;
             }
         }
@@ -385,9 +399,9 @@ public class GamePanel extends JPanel implements Runnable {
         this.buildTheMapVisually();
         System.gc();
         SoundPlayer.playGameStartSound();
-        Statistics.updateAverageTriesLvl1();
         Statistics.incrementTotalPlayedMazesLvl1();
         Statistics.resetTriesOnCurrentMazeLvl1();
+        Statistics.incrementTriesOnCurrentMazeLvl1();
     }
 
     @Override
@@ -457,39 +471,11 @@ class GameController implements KeyListener {
             this.gamePanel.exit();
         }
 
-        // Display controls
-        if (e.getKeyCode() == KeyEvent.VK_F1) {
-            System.out.println("F1 key pressed: Displaying help");
-
-            String[] columnHeaders = { "", "White", "Black", "Red", "Blue" };
-            Object[][] controls = {
-                    {"Up", "Up", "W", "T", "I"},
-                    {"Down", "Down", "S", "G", "K"},
-                    {"Left", "Left", "A", "F", "J"},
-                    {"Right", "Right", "D", "H", "L"},
-                    {"Bomb", "/", "E", "Y", "O"},
-                    {"", "", "", "", ""},
-                    {"Help", "F1", "", "", ""},
-                    {"Reset", "F5", "", "", ""},
-                    {"Exit", "ESC", "", "", ""} };
-
-            JTable controlsTable = new JTable(controls, columnHeaders);
-            JTableHeader tableHeader = controlsTable.getTableHeader();
-
-            // Wrap JTable inside JPanel to display
-            JPanel panel = new JPanel();
-            panel.setLayout(new BorderLayout());
-            panel.add(tableHeader, BorderLayout.NORTH);
-            panel.add(controlsTable, BorderLayout.CENTER);
-
-            JOptionPane.showMessageDialog(this.gamePanel, panel, "Controls", JOptionPane.PLAIN_MESSAGE);
-        }
-
         // Reset game
         // Delay prevents resetting too fast which causes the game to crash
         if (e.getKeyCode() == KeyEvent.VK_F5) {
             if (this.gamePanel.resetDelay >= 20) {
-                System.out.println("F5 key pressed: Resetting game");
+                System.out.println("F5 key pressed: Creating new maze");
                 this.gamePanel.resetGame();
             }
         }
@@ -498,8 +484,24 @@ class GameController implements KeyListener {
         // Delay prevents resetting too fast which causes the game to crash
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (this.gamePanel.resetDelay >= 20) {
-                System.out.println("Space pressed: Resetting map");
+                System.out.println("Space pressed: Resetting to start point");
                 this.gamePanel.resetMap();
+            }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_1) {
+            if (this.gamePanel.resetDelay >= 20) {
+                System.out.println("Level 1 selected");
+                this.gamePanel.level = 1;
+                this.gamePanel.resetGame();
+            }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_2) {
+            if (this.gamePanel.resetDelay >= 20) {
+                System.out.println("Level 2 selected");
+                this.gamePanel.level = 2;
+                this.gamePanel.resetGame();
             }
         }
     }

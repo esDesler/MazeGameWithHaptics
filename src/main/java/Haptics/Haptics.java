@@ -12,7 +12,7 @@ public class Haptics implements Runnable {
     double totalDistanceVertical = 32 * 12;
     double totalDistanceHorizontal = 32 * 14;
 
-    private Bomber player;
+    private final Bomber player;
 
     GameObject closestObjectUp;
     GameObject closestObjectDown;
@@ -24,7 +24,7 @@ public class Haptics implements Runnable {
     double distanceLeft;
     double distanceRight;
 
-    private GameToHapticsAPI hapticsAPI;
+    private final GameToHapticsAPI hapticsAPI;
 
     public Haptics(Bomber player) {
         this.player = player;
@@ -36,7 +36,7 @@ public class Haptics implements Runnable {
         calculateAndUpdateDistances(); // Order up, down, left, right
         updateMotorInformation();
 
-        outputDescriptiveFeedback(getObjectInPlayingDirection());
+        //outputDescriptiveFeedback(getObjectInPlayingDirection());
 
         outputMotorInformationToArduino();
     }
@@ -236,9 +236,9 @@ public class Haptics implements Runnable {
 
             generateHaptics();
 
-            System.out.println(System.currentTimeMillis() - time);
+            //System.out.println(System.currentTimeMillis() - time);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
