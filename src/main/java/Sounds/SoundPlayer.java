@@ -18,7 +18,7 @@ public class SoundPlayer {
     private static final AudioClip softWallCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/softWallCollision.wav").toString());
     private static final AudioClip bombCollision = new AudioClip(SoundPlayer.class.getResource("/resources/sound/bombCollision.wav").toString());
     private static final AudioClip gameStartLevel1 = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart1.wav").toString());
-    //private static final AudioClip gameStartLevel2 = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart2.wav").toString());
+    private static final AudioClip gameStartLevel2 = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart2.wav").toString());
     private static final AudioClip backgroundMusic = new AudioClip(SoundPlayer.class.getResource("/resources/sound/backgroundMusic.wav").toString());
 
     public static void playBombExplosionSound() {
@@ -72,7 +72,8 @@ public class SoundPlayer {
             gameStartLevel1.setVolume(0.3);
             gameStartLevel1.play();
         } else {
-            //gameStartLevel2.play();
+            gameStartLevel2.setVolume(0.15);
+            gameStartLevel2.play();
         }
     }
 
