@@ -5,13 +5,11 @@ import gameobjects.Bomber;
 import gameobjects.GameObject;
 import gameobjects.Powerup;
 import gameobjects.Wall;
-import javafx.embed.swing.JFXPanel;
 import util.GameObjectCollection;
 import util.Key;
 import util.ResourceCollection;
 
 import javax.swing.*;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -23,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * JPanel that contains the entire game and game loop logic.
@@ -64,17 +61,6 @@ public class GamePanel extends JPanel implements Runnable {
      * @param filename Name of the map file
      */
     GamePanel(String filename) {
-        final CountDownLatch latch = new CountDownLatch(1);
-        SwingUtilities.invokeLater(() -> {
-            new JFXPanel(); // initializes JavaFX environment
-            latch.countDown();
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         this.setFocusable(true);
         this.requestFocus();
         this.setControls();
@@ -98,8 +84,10 @@ public class GamePanel extends JPanel implements Runnable {
         System.gc();
         this.running = true;
         SoundPlayer.startBackgroundMusic();
-        SoundPlayer.playGameStartSound();
-        Statistics.incrementTriesOnCurrentMazeLvl1();
+        SoundPlayer.playGameStartSound(level);
+        Statistics.incrementTriesOnCurrentMaze(level);
+        Statistics.incrementTotalPlayedMazes(level);
+        Statistics.setStartTime();
         new Thread(new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(0))).start();
         //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
     }
@@ -275,8 +263,8 @@ public class GamePanel extends JPanel implements Runnable {
         GameObjectCollection.init();
         this.buildTheMapVisually();
         System.gc();
-        SoundPlayer.playGameStartSound();
-        Statistics.incrementTriesOnCurrentMazeLvl1();
+        SoundPlayer.playGameStartSound(level);
+        Statistics.incrementTriesOnCurrentMaze(level);
     }
 
     public void addNotify() {
@@ -377,8 +365,9 @@ public class GamePanel extends JPanel implements Runnable {
             // Checking size of array list because when a bomber dies, they do not immediately get deleted
             // This makes it so that the next round doesn't start until the winner is the only bomber object on the map
             if (GameObjectCollection.bomberObjects.size() <= 1) {
-                Statistics.updateAverageTriesLvl1();
-                Statistics.incrementClearedMazesLvl1();
+                Statistics.updateAverageTriesPerMaze(level);
+                Statistics.incrementClearedMazes(level);
+                Statistics.updateAverageTimePerMaze(level);
                 this.generateNewMap();
                 this.gameHUD.matchSet = false;
             }
@@ -398,10 +387,11 @@ public class GamePanel extends JPanel implements Runnable {
         this.createTheMazeStructure();
         this.buildTheMapVisually();
         System.gc();
-        SoundPlayer.playGameStartSound();
-        Statistics.incrementTotalPlayedMazesLvl1();
-        Statistics.resetTriesOnCurrentMazeLvl1();
-        Statistics.incrementTriesOnCurrentMazeLvl1();
+        SoundPlayer.playGameStartSound(level);
+        Statistics.updateStatisticsFile(level);
+        Statistics.incrementTotalPlayedMazes(level);
+        Statistics.resetTriesOnCurrentMaze(level);
+        Statistics.setStartTime();
     }
 
     @Override

@@ -1,0 +1,1 @@
+[{"Level 1":{"Average time per maze":7.588333333333334,"Average tries per maze":1.0,"Success Rate":"28.57142857142857 %"},"Level 2":{"Average time per maze":"2,88","Average tries per maze":"1,00","Success Rate":"100,00 %"},"Date":"2020-08-09"}]
