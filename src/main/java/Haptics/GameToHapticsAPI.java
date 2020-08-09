@@ -5,8 +5,7 @@ import java.util.ArrayList;
 public class GameToHapticsAPI {
 
     private final int up = 0, down = 1, left = 2,
-            right = 3, littleFinger = 4, ringFinger = 5,
-            middleFinger = 6, indexFinger = 7, thumb = 8,
+            right = 3, thumb = 4, indexFinger = 5, middleFinger = 6, ringFinger = 7, littleFinger = 8,
             extra = 9;
 
     private SerialConnector serialConnector;
@@ -24,17 +23,20 @@ public class GameToHapticsAPI {
 
     private void initializeMotors() {
         motors = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             motors.add(new Motor("M" + i));
         }
+
+        motors.get(thumb).setOnTime(1000);
+        motors.get(thumb).setOffTime(0);
     }
 
-    private void turnOffDescriptiveMotors() {
-        motors.get(littleFinger).setMotorStatus(0);
-        motors.get(ringFinger).setMotorStatus(0);
-        motors.get(middleFinger).setMotorStatus(0);
-        motors.get(indexFinger).setMotorStatus(0);
+    public void turnOffDescriptiveMotors() {
         motors.get(thumb).setMotorStatus(0);
+        /*motors.get(indexFinger).setMotorStatus(0);
+        motors.get(middleFinger).setMotorStatus(0);
+        motors.get(ringFinger).setMotorStatus(0);
+        motors.get(littleFinger).setMotorStatus(0);*/
     }
 
     public void updateUpIntensity(double distance, double outOf) {

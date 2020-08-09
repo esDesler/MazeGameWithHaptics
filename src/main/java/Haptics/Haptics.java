@@ -35,7 +35,7 @@ public class Haptics implements Runnable {
         calculateAndUpdateDistances(); // Order up, down, left, right
         updateMotorInformation();
 
-        //outputDescriptiveFeedback(getObjectInPlayingDirection());
+        outputDescriptiveFeedback(getObjectInPlayingDirection());
 
         outputMotorInformationToArduino();
     }
@@ -52,7 +52,12 @@ public class Haptics implements Runnable {
     }
 
     private void outputDescriptiveFeedback(GameObject objectInPlayingDirection) {
-        if (objectInPlayingDirection instanceof Wall) {
+        if (objectInPlayingDirection instanceof Powerup) {
+            hapticsAPI.thumb();
+        } else {
+            hapticsAPI.turnOffDescriptiveMotors();
+        }
+        /*if (objectInPlayingDirection instanceof Wall) {
             if (((Wall) objectInPlayingDirection).isBreakable()) {
                 hapticsAPI.thumb();
             } else {
@@ -64,7 +69,7 @@ public class Haptics implements Runnable {
             hapticsAPI.ringFinger();
         } else if (objectInPlayingDirection instanceof Explosion) {
             hapticsAPI.littleFinger();
-        }
+        }*/
     }
 
     private GameObject getObjectInPlayingDirection() {
