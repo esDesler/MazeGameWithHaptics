@@ -23,7 +23,6 @@ public class MazeCreator {
         } else {
             createLevelTwoMaze();
         }
-
         return maze.toMapLayout();
     }
 
@@ -47,6 +46,10 @@ public class MazeCreator {
         path.createRandomPath(maze.getMazeSize() / 2);
         path.createCircularPathToGoalTile(maze.createOuterRingOfMapArray());
         maze.addPath(path);
+    }
+
+    public Maze getMaze() {
+        return maze;
     }
 
     private void fillPositionOnMap(MazeTile position) {

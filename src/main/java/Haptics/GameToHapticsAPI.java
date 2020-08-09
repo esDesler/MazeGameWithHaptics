@@ -39,22 +39,22 @@ public class GameToHapticsAPI {
 
     public void updateUpIntensity(double distance, double outOf) {
         motors.get(up).setMotorStatus(1);
-        motors.get(up).setVibrationIntensity((int) (100 - distance / outOf * 100));
+        motors.get(up).setVibrationIntensity((int) (distance / outOf * 100));
     }
 
     public void updateDownIntensity(double distance, double outOf) {
         motors.get(down).setMotorStatus(1);
-        motors.get(down).setVibrationIntensity((int) (100 - distance / outOf*100));
+        motors.get(down).setVibrationIntensity((int) (distance / outOf*100));
     }
 
     public void updateLeftIntensity(double distance, double outOf) {
         motors.get(left).setMotorStatus(1);
-        motors.get(left).setVibrationIntensity((int) (100 - distance / outOf*100));
+        motors.get(left).setVibrationIntensity((int) (distance / outOf*100));
     }
 
     public void updateRightIntensity(double distance, double outOf) {
         motors.get(right).setMotorStatus(1);
-        motors.get(right).setVibrationIntensity((int) (100 - distance / outOf*100));
+        motors.get(right).setVibrationIntensity((int) (distance / outOf*100));
     }
 
     public void outputMotorInformationToArduino() {

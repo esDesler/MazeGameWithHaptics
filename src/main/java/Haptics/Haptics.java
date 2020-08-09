@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Haptics implements Runnable {
-    double totalDistanceVertical = 32 * 12;
-    double totalDistanceHorizontal = 32 * 14;
+    double totalDistanceVertical = 32 * 13;
+    double totalDistanceHorizontal = 32 * 13;
 
-    private final Bomber player;
+    private Bomber player;
 
     GameObject closestObjectUp;
     GameObject closestObjectDown;
@@ -26,8 +26,7 @@ public class Haptics implements Runnable {
 
     private final GameToHapticsAPI hapticsAPI;
 
-    public Haptics(Bomber player) {
-        this.player = player;
+    public Haptics() {
         this.hapticsAPI = new GameToHapticsAPI();
     }
 
@@ -238,10 +237,14 @@ public class Haptics implements Runnable {
 
             //System.out.println(System.currentTimeMillis() - time);
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void updatePlayer(Bomber player) {
+        this.player = player;
     }
 }

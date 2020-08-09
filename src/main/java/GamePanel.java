@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
     static int panelWidth;
     static int panelHeight;
 
-    private Haptics haptics;
+    private final Haptics haptics = new Haptics();
 
     private Thread thread;
     private boolean running;
@@ -47,7 +47,7 @@ public class GamePanel extends JPanel implements Runnable {
     private ArrayList<ArrayList<String>> mapLayout;
     private BufferedReader bufferedReader;
 
-    private MazeCreator mazeCreator;
+    private final MazeCreator mazeCreator;
     int level = 1;
 
     private HashMap<Integer, Key> controls;
@@ -88,7 +88,7 @@ public class GamePanel extends JPanel implements Runnable {
         Statistics.incrementTriesOnCurrentMaze(level);
         Statistics.incrementTotalPlayedMazes(level);
         Statistics.setStartTime();
-        new Thread(new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(0))).start();
+        new Thread(haptics).start();
         //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
     }
 
@@ -133,6 +133,7 @@ public class GamePanel extends JPanel implements Runnable {
      * Create game objects depending on the string.
      */
     private void buildTheMapVisually() {
+        System.out.println(mazeCreator.getMaze());
         // Map dimensions
         this.mapWidth = mapLayout.get(0).size();
         this.mapHeight = mapLayout.size();
@@ -175,11 +176,12 @@ public class GamePanel extends JPanel implements Runnable {
 
                     case ("1"):     // Player 1; Bomber
                         BufferedImage[][] sprMapP1 = ResourceCollection.SpriteMaps.PLAYER_1.getSprites();
-                        Bomber player1 = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP1, 1);
-                        PlayerController playerController1 = new PlayerController(player1, this.controls);
-                        this.addKeyListener(playerController1);
-                        this.gameHUD.assignPlayer(player1);
-                        GameObjectCollection.spawn(player1);
+                        Bomber player = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP1, 1);
+                        PlayerController playerController = new PlayerController(player, this.controls);
+                        this.addKeyListener(playerController);
+                        this.gameHUD.assignPlayer(player);
+                        GameObjectCollection.spawn(player);
+                        haptics.updatePlayer(player);
                         break;
 
                     case ("C"):

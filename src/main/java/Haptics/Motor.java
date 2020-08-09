@@ -12,7 +12,7 @@ public class Motor {
         this.motorId = motorId;
         this.motorStatus = 0;
         this.vibrationIntensity = 0;
-        this.onTime = 500; // Default value
+        this.onTime = 900; // Default value
         this.offTime = 100; // Default value
     }
 
