@@ -27,10 +27,9 @@ public class MazeCreator {
     }
 
     private void createLevelTwoMaze() {
-        maze.placeRandomGoalTile();
+        maze.placeGoalTileInRandomCorner();
         Path path = new Path(maze.getTile(maze.getCenter(), maze.getCenter()), null, maze);
 
-        //for (int i = 0; i < 30; i++)
         do {
             path.reset();
             while (!path.getHeadOfPath().isGoalTile()) {
