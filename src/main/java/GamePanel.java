@@ -31,7 +31,6 @@ public class GamePanel extends JPanel implements Runnable {
     static int panelWidth;
     static int panelHeight;
 
-    private final Haptics haptics = new Haptics();
 
     private Thread thread;
     private boolean running;
@@ -54,13 +53,14 @@ public class GamePanel extends JPanel implements Runnable {
 
     private static final double SOFTWALL_RATE = 0.825;
 
-    private final int mazeSize = 13;
+    private final Haptics haptics;
 
     /**
      * Construct game panel and load in a map file.
      * @param filename Name of the map file
      */
     GamePanel(String filename) {
+        final int mazeSize = 13;
         this.setFocusable(true);
         this.requestFocus();
         this.setControls();
@@ -68,6 +68,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.loadMapFile(filename);
         this.addKeyListener(new GameController(this));
         mazeCreator = new MazeCreator(mazeSize);
+        haptics = new Haptics(mazeSize);
     }
 
     /**
@@ -133,7 +134,6 @@ public class GamePanel extends JPanel implements Runnable {
      * Create game objects depending on the string.
      */
     private void buildTheMapVisually() {
-        System.out.println(mazeCreator.getMaze());
         // Map dimensions
         this.mapWidth = mapLayout.get(0).size();
         this.mapHeight = mapLayout.size();

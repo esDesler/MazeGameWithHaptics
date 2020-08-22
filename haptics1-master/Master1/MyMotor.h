@@ -54,7 +54,7 @@ class MyMotor
           motorState = HIGH;  // turn it on
           previousMillis = currentMillis;   // Remember the time
 
-          int pwm = map(vibrationIntensity, 0, 100, 0, 127); // 225 instead of 255, 4.5V is max for the vibration motor
+          int pwm = map(vibrationIntensity, 0, 100, 0, 150); // 168 is max for 3.3V
           analogWrite(motorPin, pwm);   // Update the actual motor
         }
       } else  {
