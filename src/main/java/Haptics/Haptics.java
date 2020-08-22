@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Haptics implements Runnable {
-    double totalDistanceVertical = 32 * 13;
-    double totalDistanceHorizontal = 32 * 13;
+    double totalDistanceVertical;
+    double totalDistanceHorizontal;
 
     private Bomber player;
 
@@ -26,17 +26,17 @@ public class Haptics implements Runnable {
 
     private final GameToHapticsAPI hapticsAPI;
 
-    public Haptics() {
+    public Haptics(int mazeSize) {
         this.hapticsAPI = new GameToHapticsAPI();
+        totalDistanceHorizontal = 32 * (mazeSize - 2);
+        totalDistanceVertical = 32 * (mazeSize - 2);
     }
 
     public void generateHaptics() {
         updateClosestObjectsInAllDirections();
         calculateAndUpdateDistances(); // Order up, down, left, right
         updateMotorInformation();
-
         outputDescriptiveFeedback(getObjectInPlayingDirection());
-
         outputMotorInformationToArduino();
     }
 
@@ -45,10 +45,23 @@ public class Haptics implements Runnable {
     }
 
     private void updateMotorInformation() {
+        trimDistances();
         hapticsAPI.updateUpIntensity(distanceUp, totalDistanceVertical);
         hapticsAPI.updateDownIntensity(distanceDown, totalDistanceVertical);
         hapticsAPI.updateLeftIntensity(distanceLeft, totalDistanceHorizontal);
         hapticsAPI.updateRightIntensity(distanceRight, totalDistanceHorizontal);
+    }
+
+    private void trimDistances() {
+        if (distanceUp < 30) {
+            distanceUp = 0;
+        } else if (distanceDown < 30) {
+            distanceDown = 0;
+        } else if (distanceLeft < 30) {
+            distanceLeft = 0;
+        } else if (distanceRight < 30) {
+            distanceRight = 0;
+        }
     }
 
     private void outputDescriptiveFeedback(GameObject objectInPlayingDirection) {

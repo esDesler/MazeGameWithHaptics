@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 
 public class SerialConnector {
 
-    private SerialPort serialPort;
+    private final SerialPort serialPort;
     PrintWriter output;
 
     public SerialConnector() {
