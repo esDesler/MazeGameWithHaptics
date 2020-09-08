@@ -192,6 +192,8 @@ public class Bomber extends Player {
                 this.moveRight();
             }
 
+            SoundPlayer.playFootStepsSound(this);
+
             // Action
             if (this.ActionPressed && this.bombAmmo > 0) {
                 this.plantBomb();

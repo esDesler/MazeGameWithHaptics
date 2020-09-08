@@ -1,9 +1,14 @@
 package Sounds;
 
 
+import gameobjects.Bomber;
 import javafx.scene.media.AudioClip;
 
 public class SoundPlayer {
+
+    private static float x;
+    private static float y;
+    private static int i = 0;
 
     private static long lastTimeHard =  0;
     private static long lastTimeSoft = 0;
@@ -20,6 +25,9 @@ public class SoundPlayer {
     private static final AudioClip gameStartLevel1 = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart1.wav").toString());
     private static final AudioClip gameStartLevel2 = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart2.wav").toString());
     private static final AudioClip backgroundMusic = new AudioClip(SoundPlayer.class.getResource("/resources/sound/backgroundMusic.wav").toString());
+    private static final AudioClip footStepsOne = new AudioClip(SoundPlayer.class.getResource("/resources/sound/footStepsOne.wav").toString());
+    private static final AudioClip footStepsTwo = new AudioClip(SoundPlayer.class.getResource("/resources/sound/footStepsTwo.wav").toString());
+    private static final AudioClip footStepsThree = new AudioClip(SoundPlayer.class.getResource("/resources/sound/footStepsThree.wav").toString());
 
     public static void playBombExplosionSound() {
         bombExplosion.play();
@@ -83,4 +91,28 @@ public class SoundPlayer {
         backgroundMusic.play();
     }
 
+    public static void setStartPosition(float newX, float newY) {
+        x = newX;
+        y = newY;
+    }
+
+    public static void playFootStepsSound(Bomber bomber) {
+        if (Math.abs(bomber.getPosition().x - x) >= 32) {
+            pickStepsClip().play();
+            x = bomber.getPosition().x;
+            i = (i + 1) % 3;
+        } else if (Math.abs(bomber.getPosition().y - y) >= 32) {
+            pickStepsClip().play();
+            y = bomber.getPosition().y;
+            i = (i + 1) % 3;
+        }
+    }
+
+    private static AudioClip pickStepsClip() {
+        switch (i) {
+            case 0: return footStepsOne;
+            case 1: return footStepsTwo;
+            default: return footStepsThree;
+        }
+    }
 }

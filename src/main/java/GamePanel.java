@@ -182,6 +182,7 @@ public class GamePanel extends JPanel implements Runnable {
                         this.gameHUD.assignPlayer(player);
                         GameObjectCollection.spawn(player);
                         haptics.updatePlayer(player);
+                        SoundPlayer.setStartPosition(player.getPosition().x, player.getPosition().y);
                         break;
 
                     case ("C"):
