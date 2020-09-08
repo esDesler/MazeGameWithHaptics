@@ -2,14 +2,21 @@ package Haptics;
 
 import java.util.ArrayList;
 
-public class GameToHapticsAPI {
+public abstract class GameToHapticsAPI {
 
-    private final int up = 0, down = 1, left = 2,
-            right = 3, thumb = 4, indexFinger = 5, middleFinger = 6, ringFinger = 7, littleFinger = 8,
-            extra = 9;
+    protected final int up = 0;
+    protected final int down = 1;
+    protected final int left = 2;
+    protected final int right = 3;
+    private final int thumb = 4;
+    private final int indexFinger = 5;
+    private final int middleFinger = 6;
+    private final int ringFinger = 7;
+    private final int littleFinger = 8;
+    private final int extra = 9;
 
     private SerialConnector serialConnector;
-    private ArrayList<Motor> motors;
+    protected ArrayList<Motor> motors;
 
     public GameToHapticsAPI() {
         initializeMotors();
@@ -23,41 +30,26 @@ public class GameToHapticsAPI {
 
     private void initializeMotors() {
         motors = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
             motors.add(new Motor("M" + i));
         }
-
-        motors.get(thumb).setOnTime(1000);
-        motors.get(thumb).setOffTime(0);
     }
 
     public void turnOffDescriptiveMotors() {
-        motors.get(thumb).setMotorStatus(0);
-        /*motors.get(indexFinger).setMotorStatus(0);
+        /*motors.get(thumb).setMotorStatus(0);
+        motors.get(indexFinger).setMotorStatus(0);
         motors.get(middleFinger).setMotorStatus(0);
         motors.get(ringFinger).setMotorStatus(0);
         motors.get(littleFinger).setMotorStatus(0);*/
     }
 
-    public void updateUpIntensity(double distance, double outOf) {
-        motors.get(up).setMotorStatus(1);
-        motors.get(up).setVibrationIntensity((int) (distance / outOf * 100));
-    }
+    public abstract void updateUpIntensity(double distance, double outOf);
 
-    public void updateDownIntensity(double distance, double outOf) {
-        motors.get(down).setMotorStatus(1);
-        motors.get(down).setVibrationIntensity((int) (distance / outOf*100));
-    }
+    public abstract void updateDownIntensity(double distance, double outOf);
 
-    public void updateLeftIntensity(double distance, double outOf) {
-        motors.get(left).setMotorStatus(1);
-        motors.get(left).setVibrationIntensity((int) (distance / outOf*100));
-    }
+    public abstract void updateLeftIntensity(double distance, double outOf);
 
-    public void updateRightIntensity(double distance, double outOf) {
-        motors.get(right).setMotorStatus(1);
-        motors.get(right).setVibrationIntensity((int) (distance / outOf*100));
-    }
+    public abstract void updateRightIntensity(double distance, double outOf);
 
     public void outputMotorInformationToArduino() {
         StringBuilder motorInformation = new StringBuilder();

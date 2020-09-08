@@ -27,7 +27,7 @@ public class Haptics implements Runnable {
     private final GameToHapticsAPI hapticsAPI;
 
     public Haptics(int mazeSize) {
-        this.hapticsAPI = new GameToHapticsAPI();
+        this.hapticsAPI = new GameToHapticsInterval();
         totalDistanceHorizontal = 32 * (mazeSize - 2);
         totalDistanceVertical = 32 * (mazeSize - 2);
     }
@@ -65,12 +65,12 @@ public class Haptics implements Runnable {
     }
 
     private void outputDescriptiveFeedback(GameObject objectInPlayingDirection) {
-        if (objectInPlayingDirection instanceof Powerup) {
+        /*if (objectInPlayingDirection instanceof Powerup) {
             hapticsAPI.thumb();
         } else {
             hapticsAPI.turnOffDescriptiveMotors();
         }
-        /*if (objectInPlayingDirection instanceof Wall) {
+        if (objectInPlayingDirection instanceof Wall) {
             if (((Wall) objectInPlayingDirection).isBreakable()) {
                 hapticsAPI.thumb();
             } else {
