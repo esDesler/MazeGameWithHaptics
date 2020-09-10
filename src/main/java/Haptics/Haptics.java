@@ -29,8 +29,8 @@ public class Haptics implements Runnable {
 
     public Haptics(int mazeSize) {
         this.hapticsAPI = new GameToHapticsIntensity();
-        totalDistanceHorizontal = 32 * (mazeSize - 2);
-        totalDistanceVertical = 32 * (mazeSize - 2);
+        totalDistanceHorizontal = 32 * (mazeSize - 2) - 12;
+        totalDistanceVertical = 32 * (mazeSize - 2) - 12;
     }
 
     public void generateHaptics() {
@@ -46,23 +46,10 @@ public class Haptics implements Runnable {
     }
 
     private void updateMotorInformation() {
-        trimDistances();
         hapticsAPI.updateUpIntensity(distanceUp, totalDistanceVertical);
         hapticsAPI.updateDownIntensity(distanceDown, totalDistanceVertical);
         hapticsAPI.updateLeftIntensity(distanceLeft, totalDistanceHorizontal);
         hapticsAPI.updateRightIntensity(distanceRight, totalDistanceHorizontal);
-    }
-
-    private void trimDistances() {
-        if (distanceUp < 30) {
-            distanceUp = 0;
-        } else if (distanceDown < 30) {
-            distanceDown = 0;
-        } else if (distanceLeft < 30) {
-            distanceLeft = 0;
-        } else if (distanceRight < 30) {
-            distanceRight = 0;
-        }
     }
 
     private void outputDescriptiveFeedback(GameObject objectInPlayingDirection) {
@@ -101,10 +88,10 @@ public class Haptics implements Runnable {
     }
 
     private void calculateAndUpdateDistances() {
-        distanceUp = player.getColliderCenter().getY() - closestObjectUp.getColliderCenter().getY();
-        distanceDown = closestObjectDown.getColliderCenter().getY() - player.getColliderCenter().getY();
-        distanceLeft = player.getColliderCenter().getX() - closestObjectLeft.getColliderCenter().getX();
-        distanceRight = closestObjectRight.getColliderCenter().getX() - player.getColliderCenter().getX();
+        distanceUp = player.getColliderCenter().getY() - closestObjectUp.getColliderCenter().getY() - 28;
+        distanceDown = closestObjectDown.getColliderCenter().getY() - player.getColliderCenter().getY() - 28;
+        distanceLeft = player.getColliderCenter().getX() - closestObjectLeft.getColliderCenter().getX() - 28;
+        distanceRight = closestObjectRight.getColliderCenter().getX() - player.getColliderCenter().getX() - 28;
     }
 
     private void updateClosestObjectsInAllDirections() {
