@@ -25,9 +25,13 @@ public class SoundPlayer {
     private static final AudioClip gameStartLevel1 = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart1.wav").toString());
     private static final AudioClip gameStartLevel2 = new AudioClip(SoundPlayer.class.getResource("/resources/sound/gameStart2.wav").toString());
     private static final AudioClip backgroundMusic = new AudioClip(SoundPlayer.class.getResource("/resources/sound/backgroundMusic.wav").toString());
+
+    /**
+     * "Footsteps, Concrete, A.wav" by InspectorJ (www.jshaw.co.uk) of Freesound.org
+     */
+    private static final AudioClip footStepsThree = new AudioClip(SoundPlayer.class.getResource("/resources/sound/footStepsThree.wav").toString());
     private static final AudioClip footStepsOne = new AudioClip(SoundPlayer.class.getResource("/resources/sound/footStepsOne.wav").toString());
     private static final AudioClip footStepsTwo = new AudioClip(SoundPlayer.class.getResource("/resources/sound/footStepsTwo.wav").toString());
-    private static final AudioClip footStepsThree = new AudioClip(SoundPlayer.class.getResource("/resources/sound/footStepsThree.wav").toString());
 
     public static void playBombExplosionSound() {
         bombExplosion.play();
