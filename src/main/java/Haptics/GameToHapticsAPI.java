@@ -88,4 +88,28 @@ public abstract class GameToHapticsAPI {
         motors.get(littleFinger).setMotorStatus(1);
         motors.get(littleFinger).setVibrationIntensity(50);
     }
+
+    public void turnOffAllMotors() {
+        for (Motor motor : motors) {
+            motor.setMotorStatus(0);
+        }
+    }
+
+    public void turnOnAllMotors() {
+        for (Motor motor : motors) {
+            motor.setMotorStatus(1);
+        }
+    }
+
+    public void removeOffTime() {
+        for (Motor motor : motors) {
+            motor.setOffTime(0);
+        }
+    }
+
+    public void addDefaultOffTime() {
+        for (Motor motor : motors) {
+            motor.setOffTime(100);
+        }
+    }
 }

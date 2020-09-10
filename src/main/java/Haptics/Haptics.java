@@ -25,9 +25,10 @@ public class Haptics implements Runnable {
     double distanceRight;
 
     private final GameToHapticsAPI hapticsAPI;
+    private volatile boolean paused;
 
     public Haptics(int mazeSize) {
-        this.hapticsAPI = new GameToHapticsInterval();
+        this.hapticsAPI = new GameToHapticsIntensity();
         totalDistanceHorizontal = 32 * (mazeSize - 2);
         totalDistanceVertical = 32 * (mazeSize - 2);
     }
@@ -40,7 +41,7 @@ public class Haptics implements Runnable {
         outputMotorInformationToArduino();
     }
 
-    private void outputMotorInformationToArduino() {
+    public void outputMotorInformationToArduino() {
         hapticsAPI.outputMotorInformationToArduino();
     }
 
@@ -249,20 +250,72 @@ public class Haptics implements Runnable {
     @Override
     public void run() {
         while (true) {
-            long time = System.currentTimeMillis();
 
-            generateHaptics();
+            if (!paused) {
+                generateHaptics();
+            }
 
-            //System.out.println(System.currentTimeMillis() - time);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                break;
             }
         }
     }
 
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
     public void updatePlayer(Bomber player) {
         this.player = player;
+    }
+
+    public void turnOffAllMotors() {
+        hapticsAPI.turnOffAllMotors();
+    }
+
+    public void turnOnAllMotors() {
+        hapticsAPI.turnOnAllMotors();
+    }
+
+    public void updateUpIntensity(double value) {
+        hapticsAPI.updateUpIntensity(value, totalDistanceVertical);
+    }
+
+
+    public void updateDownIntensity(double value) {
+        hapticsAPI.updateDownIntensity(value, totalDistanceVertical);
+    }
+
+
+    public void updateRightIntensity(double value) {
+        hapticsAPI.updateRightIntensity(value, totalDistanceHorizontal);
+    }
+
+
+    public void updateLeftIntensity(double value) {
+        hapticsAPI.updateLeftIntensity(value, totalDistanceHorizontal);
+    }
+
+    public void resetAllMotors() {
+        turnOffAllMotors();
+        updateUpIntensity(0);
+        updateDownIntensity(0);
+        updateLeftIntensity(0);
+        updateRightIntensity(0);
+    }
+
+    public void removeOffTime() {
+        hapticsAPI.removeOffTime();
+    }
+
+    public void addDefaultOffTime() {
+        hapticsAPI.addDefaultOffTime();
     }
 }

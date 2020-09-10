@@ -31,7 +31,6 @@ public class GamePanel extends JPanel implements Runnable {
     static int panelWidth;
     static int panelHeight;
 
-
     private Thread thread;
     private boolean running;
     int resetDelay;
@@ -54,6 +53,10 @@ public class GamePanel extends JPanel implements Runnable {
     private static final double SOFTWALL_RATE = 0.825;
 
     private final Haptics haptics;
+    private final Thread hapticsThread;
+
+    private Bomber player;
+    private Powerup goalTile;
 
     /**
      * Construct game panel and load in a map file.
@@ -69,6 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(new GameController(this));
         mazeCreator = new MazeCreator(mazeSize);
         haptics = new Haptics(mazeSize);
+        hapticsThread = new Thread(haptics);
     }
 
     /**
@@ -89,7 +93,7 @@ public class GamePanel extends JPanel implements Runnable {
         Statistics.incrementTriesOnCurrentMaze(level);
         Statistics.incrementTotalPlayedMazes(level);
         Statistics.setStartTime();
-        new Thread(haptics).start();
+        hapticsThread.start();
         //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
     }
 
@@ -176,7 +180,7 @@ public class GamePanel extends JPanel implements Runnable {
 
                     case ("1"):     // Player 1; Bomber
                         BufferedImage[][] sprMapP1 = ResourceCollection.SpriteMaps.PLAYER_1.getSprites();
-                        Bomber player = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP1, 1);
+                        player = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP1, 1);
                         PlayerController playerController = new PlayerController(player, this.controls);
                         this.addKeyListener(playerController);
                         this.gameHUD.assignPlayer(player);
@@ -186,7 +190,8 @@ public class GamePanel extends JPanel implements Runnable {
                         break;
 
                     case ("C"):
-                        GameObjectCollection.spawn(new Powerup(new Point2D.Float(x * 32, y * 32), Powerup.Type.Checkpoint));
+                        goalTile = new Powerup(new Point2D.Float(x * 32, y * 32), Powerup.Type.Checkpoint);
+                        GameObjectCollection.spawn(goalTile);
                         break;
 
                     case ("PB"):    // Powerup Bomb
@@ -431,6 +436,44 @@ public class GamePanel extends JPanel implements Runnable {
         this.buffer.dispose();
     }
 
+    public void sendHapticInformationAboutGoal() {
+        System.out.println("Pausing");
+        haptics.pause();
+
+        haptics.resetAllMotors();
+        haptics.outputMotorInformationToArduino();
+
+        long time = System.currentTimeMillis();
+
+        while (System.currentTimeMillis() - time < 1000) {}
+
+        double verticalInfo = player.getColliderCenter().getY() - goalTile.getColliderCenter().getY();
+        double horizontalInfo = player.getColliderCenter().getX() - goalTile.getColliderCenter().getX();
+
+        if (verticalInfo < 0) {
+            haptics.updateDownIntensity(Math.abs(verticalInfo));
+        } else if (verticalInfo >= 0) {
+            haptics.updateUpIntensity(verticalInfo);
+        }
+
+        if (horizontalInfo < 0) {
+            haptics.updateRightIntensity(Math.abs(horizontalInfo));
+        } else if (horizontalInfo >= 0) {
+            haptics.updateLeftIntensity(horizontalInfo);
+        }
+
+        haptics.turnOnAllMotors();
+        haptics.removeOffTime();
+        haptics.outputMotorInformationToArduino();
+
+        time = System.currentTimeMillis();
+
+        while (System.currentTimeMillis() - time < 1000) {}
+
+        System.out.println("Resuming");
+        haptics.addDefaultOffTime();
+        haptics.resume();
+    }
 }
 
 /**
@@ -466,23 +509,23 @@ class GameController implements KeyListener {
 
         // Reset game
         // Delay prevents resetting too fast which causes the game to crash
-        if (e.getKeyCode() == KeyEvent.VK_F5) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             if (this.gamePanel.resetDelay >= 20) {
-                System.out.println("F5 key pressed: Creating new maze");
+                System.out.println("Enter pressed: Creating new maze");
                 this.gamePanel.resetGame();
             }
         }
 
         // Reset map
         // Delay prevents resetting too fast which causes the game to crash
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
             if (this.gamePanel.resetDelay >= 20) {
-                System.out.println("Space pressed: Resetting to start point");
+                System.out.println("Shift pressed: Resetting to start point");
                 this.gamePanel.resetMap();
             }
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_1) {
+        if (e.getKeyCode() == KeyEvent.VK_NUMPAD1) {
             if (this.gamePanel.resetDelay >= 20) {
                 System.out.println("Level 1 selected");
                 this.gamePanel.level = 1;
@@ -490,11 +533,19 @@ class GameController implements KeyListener {
             }
         }
 
-        if (e.getKeyCode() == KeyEvent.VK_2) {
+        if (e.getKeyCode() == KeyEvent.VK_NUMPAD2) {
             if (this.gamePanel.resetDelay >= 20) {
                 System.out.println("Level 2 selected");
                 this.gamePanel.level = 2;
                 this.gamePanel.resetGame();
+            }
+        }
+
+        // Request haptic information about where the goal is relative to you
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            if (this.gamePanel.resetDelay >= 20) {
+                System.out.println("Space key pressed: Sending goal location as haptic information");
+                this.gamePanel.sendHapticInformationAboutGoal();
             }
         }
     }
