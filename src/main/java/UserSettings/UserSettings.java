@@ -22,14 +22,12 @@ public class UserSettings {
         if (vibrationIntensity < 2) {
             vibrationIntensity += 0.1;
         }
-        System.out.println(vibrationIntensity);
     }
 
     public static void incrementIntensity() {
         if (vibrationIntensity > 1) {
             vibrationIntensity -= 0.1;
         }
-        System.out.println(vibrationIntensity);
     }
 
     public static void setVibrationIntensity(int vibrationIntensity) {
