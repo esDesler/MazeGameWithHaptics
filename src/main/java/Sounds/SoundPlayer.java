@@ -1,6 +1,7 @@
 package Sounds;
 
 
+import UserSettings.UserSettings;
 import gameobjects.Bomber;
 import javafx.scene.media.AudioClip;
 
@@ -10,7 +11,7 @@ public class SoundPlayer {
     private static float y;
     private static int i = 0;
 
-    private static long lastTimeHard =  0;
+    private static long lastTimeHard = 0;
     private static long lastTimeSoft = 0;
     private static long lastTimeBomb = 0;
 
@@ -114,9 +115,20 @@ public class SoundPlayer {
 
     private static AudioClip pickStepsClip() {
         switch (i) {
-            case 0: return footStepsOne;
-            case 1: return footStepsTwo;
-            default: return footStepsThree;
+            case 0:
+                return footStepsOne;
+            case 1:
+                return footStepsTwo;
+            default:
+                return footStepsThree;
+        }
+    }
+
+    public static void turnOnOffBackgroundSound() {
+        if (UserSettings.isMuteMusic()) {
+            backgroundMusic.stop();
+        } else {
+            backgroundMusic.play();
         }
     }
 }

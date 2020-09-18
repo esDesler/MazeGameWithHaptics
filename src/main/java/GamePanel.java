@@ -1,6 +1,7 @@
 import Haptics.Haptics;
 import MazeCreator.MazeCreator;
 import Sounds.SoundPlayer;
+import UserSettings.UserSettings;
 import gameobjects.Bomber;
 import gameobjects.GameObject;
 import gameobjects.Powerup;
@@ -474,6 +475,10 @@ public class GamePanel extends JPanel implements Runnable {
         haptics.addDefaultOffTime();
         haptics.resume();
     }
+
+    public void turnOnOffBackgroundSound() {
+        SoundPlayer.turnOnOffBackgroundSound();
+    }
 }
 
 /**
@@ -547,6 +552,19 @@ class GameController implements KeyListener {
                 System.out.println("Space key pressed: Sending goal location as haptic information");
                 this.gamePanel.sendHapticInformationAboutGoal();
             }
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_NUMPAD0) {
+            UserSettings.setMuteMusic(!UserSettings.isMuteMusic());
+            this.gamePanel.turnOnOffBackgroundSound();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_PLUS) {
+            UserSettings.incrementIntensity();
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_MINUS) {
+            UserSettings.decrementIntensity();
         }
     }
 

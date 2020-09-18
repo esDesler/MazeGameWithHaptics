@@ -1,5 +1,6 @@
 package Haptics;
 
+import UserSettings.UserSettings;
 import gameobjects.*;
 import util.GameObjectCollection;
 
@@ -46,10 +47,10 @@ public class Haptics implements Runnable {
     }
 
     private void updateMotorInformation() {
-        hapticsAPI.updateUpIntensity(distanceUp, totalDistanceVertical);
-        hapticsAPI.updateDownIntensity(distanceDown, totalDistanceVertical);
-        hapticsAPI.updateLeftIntensity(distanceLeft, totalDistanceHorizontal);
-        hapticsAPI.updateRightIntensity(distanceRight, totalDistanceHorizontal);
+        hapticsAPI.updateUpIntensity(distanceUp, totalDistanceVertical * UserSettings.getVibrationIntensity());
+        hapticsAPI.updateDownIntensity(distanceDown, totalDistanceVertical * UserSettings.getVibrationIntensity());
+        hapticsAPI.updateLeftIntensity(distanceLeft, totalDistanceHorizontal * UserSettings.getVibrationIntensity());
+        hapticsAPI.updateRightIntensity(distanceRight, totalDistanceHorizontal * UserSettings.getVibrationIntensity());
     }
 
     private void outputDescriptiveFeedback(GameObject objectInPlayingDirection) {
