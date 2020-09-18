@@ -14,6 +14,7 @@ public class Haptics implements Runnable {
     double totalDistanceHorizontal;
 
     private Bomber player;
+    private TileObject goalTile;
 
     GameObject closestObjectUp;
     GameObject closestObjectDown;
@@ -26,7 +27,7 @@ public class Haptics implements Runnable {
     double distanceRight;
 
     private final GameToHapticsAPI hapticsAPI;
-    private volatile boolean paused;
+    private volatile boolean navigationMode;
 
     public Haptics(int mazeSize) {
         this.hapticsAPI = new GameToHapticsIntensity();
@@ -239,8 +240,12 @@ public class Haptics implements Runnable {
     public void run() {
         while (true) {
 
-            if (!paused) {
+            if (!navigationMode) {
+                setUpMotorsForGameHaptics();
                 generateHaptics();
+            } else {
+                setUpMotorsForNavigationHaptics();
+                navigationHaptics();
             }
 
             try {
@@ -252,16 +257,47 @@ public class Haptics implements Runnable {
         }
     }
 
-    public void pause() {
-        paused = true;
+    private void setUpMotorsForNavigationHaptics() {
+        removeOffTime();
+    }
+
+    private void setUpMotorsForGameHaptics() {
+        addDefaultOffTime();
+    }
+
+    private void navigationHaptics() {
+        double verticalInfo = player.getColliderCenter().getY() - goalTile.getColliderCenter().getY();
+        double horizontalInfo = player.getColliderCenter().getX() - goalTile.getColliderCenter().getX();
+
+        if (verticalInfo < 0) {
+            updateDownIntensity(Math.abs(verticalInfo));
+        } else if (verticalInfo >= 0) {
+            updateUpIntensity(verticalInfo);
+        }
+
+        if (horizontalInfo < 0) {
+            updateRightIntensity(Math.abs(horizontalInfo));
+        } else if (horizontalInfo >= 0) {
+            updateLeftIntensity(horizontalInfo);
+        }
+
+        outputMotorInformationToArduino();
+    }
+
+    public void switchOnOffNavigationMode(boolean onOff) {
+        navigationMode = onOff;
     }
 
     public void resume() {
-        paused = false;
+        navigationMode = false;
     }
 
     public void updatePlayer(Bomber player) {
         this.player = player;
+    }
+
+    public void updateGoalTile(TileObject goalTile) {
+        this.goalTile = goalTile;
     }
 
     public void turnOffAllMotors() {

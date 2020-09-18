@@ -187,6 +187,7 @@ public class GamePanel extends JPanel implements Runnable {
                         this.gameHUD.assignPlayer(player);
                         GameObjectCollection.spawn(player);
                         haptics.updatePlayer(player);
+                        haptics.updateGoalTile(goalTile);
                         SoundPlayer.setStartPosition(player.getPosition().x, player.getPosition().y);
                         break;
 
@@ -439,7 +440,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void sendHapticInformationAboutGoal() {
         System.out.println("Pausing");
-        haptics.pause();
+        //haptics.switchOnOffNavigationMode();
 
         haptics.resetAllMotors();
         haptics.outputMotorInformationToArduino();
@@ -479,6 +480,10 @@ public class GamePanel extends JPanel implements Runnable {
     public void turnOnOffBackgroundSound() {
         SoundPlayer.turnOnOffBackgroundSound();
     }
+
+    public void switchOnOffNavigationMode(boolean navigationMode) {
+        haptics.switchOnOffNavigationMode(navigationMode);
+    }
 }
 
 /**
@@ -488,6 +493,7 @@ class GameController implements KeyListener {
 
     private GamePanel gamePanel;
 
+    private boolean navigationMode;
     /**
      * Construct a universal game controller key listener for the game.
      * @param gamePanel Attach game controller to this game panel
@@ -549,8 +555,10 @@ class GameController implements KeyListener {
         // Request haptic information about where the goal is relative to you
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (this.gamePanel.resetDelay >= 20) {
-                System.out.println("Space key pressed: Sending goal location as haptic information");
-                this.gamePanel.sendHapticInformationAboutGoal();
+                System.out.println("Space key pressed: " + (navigationMode ? "Switching back to game mode" : "Switching to navigation mode"));
+                navigationMode = !navigationMode;
+                this.gamePanel.switchOnOffNavigationMode(navigationMode);
+                //this.gamePanel.sendHapticInformationAboutGoal();
             }
         }
 
