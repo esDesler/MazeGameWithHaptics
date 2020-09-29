@@ -37,7 +37,7 @@ public class MazeCreator {
                 maze = loadMap("openSpacePath");
                 break;
             default:
-                maze = loadMap("multiplePaths");
+                maze = loadMap("smallOpeningPath");
                 break;
         }
         maze = rotateMaze(maze, random.nextInt(4));
