@@ -57,6 +57,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Bomber player;
     private Powerup goalTile;
+    private volatile boolean generateNewMaze;
+    private volatile boolean reconstructMaze;
 
     /**
      * Construct game panel and load in a map file.
@@ -260,21 +262,17 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * When F5 is pressed, reset game object collection, collect garbage, reinitialize game panel, reload map
+     * When Enter is pressed, reset game object collection, collect garbage, reinitialize game panel, reload map
      */
     void resetGame() {
-        generateNewMap();
+        generateNewMaze = true;
     }
 
     /**
      * Reset only the map, keeping the score
      */
     void resetMap() {
-        GameObjectCollection.init();
-        this.buildTheMapVisually();
-        System.gc();
-        SoundPlayer.playGameStartSound(level);
-        Statistics.incrementTriesOnCurrentMaze(level);
+        reconstructMaze = true;
     }
 
     public void addNotify() {
@@ -324,6 +322,16 @@ public class GamePanel extends JPanel implements Runnable {
                 fps = 0;
                 ticks = 0;
 
+            }
+
+            if (generateNewMaze) {
+                generateNewMap();
+                generateNewMaze = false;
+            }
+
+            if (reconstructMaze) {
+                reconstructCurrentMaze();
+                reconstructMaze = false;
             }
         }
 
@@ -378,8 +386,8 @@ public class GamePanel extends JPanel implements Runnable {
                 Statistics.updateAverageTriesPerMaze(level);
                 Statistics.incrementClearedMazes(level);
                 Statistics.updateAverageTimePerMaze(level);
-                this.generateNewMap();
                 this.gameHUD.matchSet = false;
+                generateNewMaze = true;
             }
         }
 
@@ -394,14 +402,22 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void generateNewMap() {
         GameObjectCollection.init();
-        this.createTheMazeStructure();
-        this.buildTheMapVisually();
+        createTheMazeStructure();
+        buildTheMapVisually();
         System.gc();
         SoundPlayer.playGameStartSound(level);
         Statistics.updateStatisticsFile(level);
         Statistics.incrementTotalPlayedMazes(level);
         Statistics.resetTriesOnCurrentMaze(level);
         Statistics.setStartTime();
+    }
+
+    private void reconstructCurrentMaze() {
+        GameObjectCollection.init();
+        this.buildTheMapVisually();
+        System.gc();
+        SoundPlayer.playGameStartSound(level);
+        Statistics.incrementTriesOnCurrentMaze(level);
     }
 
     @Override
@@ -436,45 +452,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2.dispose();
         buffer.dispose();
-    }
-
-    public void sendHapticInformationAboutGoal() {
-        System.out.println("Pausing");
-        //haptics.switchOnOffNavigationMode();
-
-        haptics.resetAllMotors();
-        haptics.outputMotorInformationToArduino();
-
-        long time = System.currentTimeMillis();
-
-        while (System.currentTimeMillis() - time < 1000) {}
-
-        double verticalInfo = player.getColliderCenter().getY() - goalTile.getColliderCenter().getY();
-        double horizontalInfo = player.getColliderCenter().getX() - goalTile.getColliderCenter().getX();
-
-        if (verticalInfo < 0) {
-            haptics.updateDownIntensity(Math.abs(verticalInfo));
-        } else if (verticalInfo >= 0) {
-            haptics.updateUpIntensity(verticalInfo);
-        }
-
-        if (horizontalInfo < 0) {
-            haptics.updateRightIntensity(Math.abs(horizontalInfo));
-        } else if (horizontalInfo >= 0) {
-            haptics.updateLeftIntensity(horizontalInfo);
-        }
-
-        haptics.turnOnAllMotors();
-        haptics.removeOffTime();
-        haptics.outputMotorInformationToArduino();
-
-        time = System.currentTimeMillis();
-
-        while (System.currentTimeMillis() - time < 1000) {}
-
-        System.out.println("Resuming");
-        haptics.addDefaultOffTime();
-        haptics.resume();
     }
 
     public void turnOnOffBackgroundSound() {
@@ -525,6 +502,8 @@ class GameController implements KeyListener {
                     {"Choose level 2", "Numpad2"},
                     {"Navigation Mode", "Space"},
                     {"Mute music", "Numpad0"},
+                    {"Increase vibration", "+"},
+                    {"Decrease vibration", "-"},
                     {"Reset", "Enter"},
                     {"Exit", "ESC"}
             };
@@ -587,7 +566,6 @@ class GameController implements KeyListener {
                 System.out.println("Space key pressed: " + (navigationMode ? "Switching back to game mode" : "Switching to navigation mode"));
                 navigationMode = !navigationMode;
                 this.gamePanel.switchOnOffNavigationMode(navigationMode);
-                //this.gamePanel.sendHapticInformationAboutGoal();
             }
         }
 
