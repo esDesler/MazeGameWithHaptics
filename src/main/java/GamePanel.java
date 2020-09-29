@@ -11,6 +11,7 @@ import util.Key;
 import util.ResourceCollection;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -37,14 +38,12 @@ public class GamePanel extends JPanel implements Runnable {
     int resetDelay;
 
     private BufferedImage world;
-    private Graphics2D buffer;
-    private BufferedImage bg;
+    private final BufferedImage bg;
     private GameHUD gameHUD;
 
     private int mapWidth;
     private int mapHeight;
     private ArrayList<ArrayList<String>> mapLayout;
-    private BufferedReader bufferedReader;
 
     private final MazeCreator mazeCreator;
     int level = 1;
@@ -64,7 +63,7 @@ public class GamePanel extends JPanel implements Runnable {
      * @param filename Name of the map file
      */
     GamePanel(String filename) {
-        final int mazeSize = 13;
+        final int mazeSize = 20;
         this.setFocusable(true);
         this.requestFocus();
         this.setControls();
@@ -99,7 +98,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void createTheMazeStructure() {
-        mapLayout = mazeCreator.createMaze(level);
+        mapLayout = mazeCreator.createMazeV2(level);
     }
 
     /**
@@ -109,12 +108,13 @@ public class GamePanel extends JPanel implements Runnable {
      */
     private void loadMapFile(String mapFile) {
         // Loading map file
+        BufferedReader bufferedReader;
         try {
-            this.bufferedReader = new BufferedReader(new FileReader(mapFile));
+            bufferedReader = new BufferedReader(new FileReader(mapFile));
         } catch (IOException | NullPointerException e) {
             // Load default map when map file could not be loaded
             System.err.println(e + ": Cannot load map file, loading default map");
-            this.bufferedReader = new BufferedReader(ResourceCollection.Files.DEFAULT_MAP.getFile());
+            bufferedReader = new BufferedReader(ResourceCollection.Files.DEFAULT_MAP.getFile());
         }
 
         // Parsing map data from file
@@ -186,8 +186,8 @@ public class GamePanel extends JPanel implements Runnable {
                         this.addKeyListener(playerController);
                         this.gameHUD.assignPlayer(player);
                         GameObjectCollection.spawn(player);
-                        haptics.updatePlayer(player);
                         haptics.updateGoalTile(goalTile);
+                        haptics.updatePlayer(player);
                         SoundPlayer.setStartPosition(player.getPosition().x, player.getPosition().y);
                         break;
 
@@ -407,8 +407,8 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        this.buffer = this.world.createGraphics();
-        this.buffer.clearRect(0, 0, this.world.getWidth(), this.world.getHeight());
+        Graphics2D buffer = this.world.createGraphics();
+        buffer.clearRect(0, 0, this.world.getWidth(), this.world.getHeight());
         super.paintComponent(g2);
 
         this.gameHUD.drawHUD();
@@ -416,7 +416,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Draw background
         for (int i = 0; i < this.world.getWidth(); i += this.bg.getWidth()) {
             for (int j = 0; j < this.world.getHeight(); j += this.bg.getHeight()) {
-                this.buffer.drawImage(this.bg, i, j, null);
+                buffer.drawImage(this.bg, i, j, null);
             }
         }
 
@@ -424,7 +424,7 @@ public class GamePanel extends JPanel implements Runnable {
         for (int i = 0; i < GameObjectCollection.gameObjects.size(); i++) {
             for (int j = 0; j < GameObjectCollection.gameObjects.get(i).size(); j++) {
                 GameObject obj = GameObjectCollection.gameObjects.get(i).get(j);
-                obj.drawImage(this.buffer);
+                obj.drawImage(buffer);
             }
         }
 
@@ -435,7 +435,7 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawImage(this.world, 0, GameWindow.HUD_HEIGHT, null);
 
         g2.dispose();
-        this.buffer.dispose();
+        buffer.dispose();
     }
 
     public void sendHapticInformationAboutGoal() {
@@ -512,6 +512,35 @@ class GameController implements KeyListener {
      */
     @Override
     public void keyPressed(KeyEvent e) {
+        // Display controls
+        if (e.getKeyCode() == KeyEvent.VK_F1) {
+            System.out.println("F1 key pressed: Displaying help");
+
+            String[] columnHeaders = { "Command", "Key" };
+            Object[][] controls = {
+                    {"Help", "F1"},
+                    {"Start from center", "Shift"},
+                    {"New maze", "Enter"},
+                    {"Choose level 1", "Numpad1"},
+                    {"Choose level 2", "Numpad2"},
+                    {"Navigation Mode", "Space"},
+                    {"Mute music", "Numpad0"},
+                    {"Reset", "Enter"},
+                    {"Exit", "ESC"}
+            };
+
+            JTable controlsTable = new JTable(controls, columnHeaders);
+            JTableHeader tableHeader = controlsTable.getTableHeader();
+
+            // Wrap JTable inside JPanel to display
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout());
+            panel.add(tableHeader, BorderLayout.NORTH);
+            panel.add(controlsTable, BorderLayout.CENTER);
+
+            JOptionPane.showMessageDialog(this.gamePanel, panel, "Controls", JOptionPane.PLAIN_MESSAGE);
+        }
+
         // Close game
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             System.out.println("Escape key pressed: Closing game");
@@ -563,15 +592,22 @@ class GameController implements KeyListener {
         }
 
         if (e.getKeyCode() == KeyEvent.VK_NUMPAD0) {
+            if (UserSettings.isMuteMusic()) {
+                System.out.println("Playing music");
+            } else {
+                System.out.println("Muting music");
+            }
             UserSettings.setMuteMusic(!UserSettings.isMuteMusic());
             this.gamePanel.turnOnOffBackgroundSound();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_PLUS) {
+            System.out.println("Plus key pressed: Increasing vibration intensity");
             UserSettings.incrementIntensity();
         }
 
         if (e.getKeyCode() == KeyEvent.VK_MINUS) {
+            System.out.println("Minus key pressed: Decreasing vibration intensity");
             UserSettings.decrementIntensity();
         }
     }

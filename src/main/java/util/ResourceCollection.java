@@ -56,7 +56,8 @@ public class ResourceCollection {
     }
 
     public enum Files {
-        DEFAULT_MAP;
+        DEFAULT_MAP,
+        ONE_PATH_MAP;
 
         private InputStreamReader file = null;
 
@@ -101,7 +102,8 @@ public class ResourceCollection {
             SpriteMaps.BOMB_PIERCE.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/bomb_pierce.png"));
             SpriteMaps.EXPLOSION_SPRITEMAP.image = ImageIO.read(ResourceCollection.class.getResource("/resources/animation/explosion.png"));
 
-            Files.DEFAULT_MAP.file = new InputStreamReader(ResourceCollection.class.getResourceAsStream("/resources/animation/default.csv"));
+            Files.DEFAULT_MAP.file = new InputStreamReader(ResourceCollection.class.getResourceAsStream("/resources/maps/default.csv"));
+            Files.ONE_PATH_MAP.file = new InputStreamReader(ResourceCollection.class.getResourceAsStream("/resources/maps/onePath.csv"));
         } catch (IOException e) {
             System.err.println(e + ": Cannot read image file");
             e.printStackTrace();
@@ -109,7 +111,7 @@ public class ResourceCollection {
     }
 
     /**
-     * Slice and load sprite maps.
+     * Slice and load sprite maps.+
      */
     public static void init() {
         SpriteMaps.PLAYER_1.sprites = sliceSpriteMap(SpriteMaps.PLAYER_1.image, 32, 48);
