@@ -70,7 +70,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.requestFocus();
         this.setControls();
         this.bg = ResourceCollection.Images.BACKGROUND.getImage();
-        this.loadMapFile(filename);
         this.addKeyListener(new GameController(this));
         mazeCreator = new MazeCreator(mazeSize);
         haptics = new Haptics(mazeSize);
@@ -101,39 +100,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void createTheMazeStructure() {
         mapLayout = mazeCreator.createMazeV2(level);
-    }
-
-    /**
-     * Loads the map file into buffered reader or load default map when no file is given.
-     * The file should be a file with strings separated by commas ",". Preferred .csv file.
-     * @param mapFile Name of the map file
-     */
-    private void loadMapFile(String mapFile) {
-        // Loading map file
-        BufferedReader bufferedReader;
-        try {
-            bufferedReader = new BufferedReader(new FileReader(mapFile));
-        } catch (IOException | NullPointerException e) {
-            // Load default map when map file could not be loaded
-            System.err.println(e + ": Cannot load map file, loading default map");
-            bufferedReader = new BufferedReader(ResourceCollection.Files.DEFAULT_MAP.getFile());
-        }
-
-        // Parsing map data from file
-        this.mapLayout = new ArrayList<>();
-        try {
-            String currentLine;
-            while ((currentLine = bufferedReader.readLine()) != null) {
-                if (currentLine.isEmpty()) {
-                    continue;
-                }
-                // Split row into array of strings and add to array list
-                mapLayout.add(new ArrayList<>(Arrays.asList(currentLine.split(","))));
-            }
-        } catch (IOException | NullPointerException e) {
-            System.out.println(e + ": Error parsing map data");
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -188,7 +154,6 @@ public class GamePanel extends JPanel implements Runnable {
                         this.addKeyListener(playerController);
                         this.gameHUD.assignPlayer(player);
                         GameObjectCollection.spawn(player);
-                        haptics.updateGoalTile(goalTile);
                         haptics.updatePlayer(player);
                         SoundPlayer.setStartPosition(player.getPosition().x, player.getPosition().y);
                         break;
@@ -196,6 +161,7 @@ public class GamePanel extends JPanel implements Runnable {
                     case ("C"):
                         goalTile = new Powerup(new Point2D.Float(x * 32, y * 32), Powerup.Type.Checkpoint);
                         GameObjectCollection.spawn(goalTile);
+                        haptics.updateGoalTile(goalTile);
                         break;
 
                     case ("PB"):    // Powerup Bomb
