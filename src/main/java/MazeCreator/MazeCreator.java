@@ -29,12 +29,15 @@ public class MazeCreator {
         Random random = new Random();
         ArrayList<ArrayList<String>> maze;
 
-        switch (random.nextInt(3)) {
+        switch (random.nextInt(4)) {
             case 1:
                 maze = loadMap("multiplePaths");
                 break;
             case 2:
-                maze = loadMap("openSpacePath");
+                maze = loadMap("openSquaresPath");
+                break;
+            case 3:
+                maze = loadMap("openCenterPath");
                 break;
             default:
                 maze = loadMap("smallOpeningPath");
