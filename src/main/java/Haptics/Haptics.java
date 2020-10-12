@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Haptics implements Runnable {
+public class Haptics {
     double totalDistanceVertical;
     double totalDistanceHorizontal;
 
@@ -36,6 +36,16 @@ public class Haptics implements Runnable {
     }
 
     public void generateHaptics() {
+        if (!navigationMode) {
+            setUpMotorsForGameHaptics();
+            generateGameHaptics();
+        } else {
+            setUpMotorsForNavigationHaptics();
+            generateNavigationHaptics();
+        }
+    }
+
+    private void generateGameHaptics() {
         updateClosestObjectsInAllDirections();
         calculateAndUpdateDistances(); // Order up, down, left, right
         updateMotorInformation();
@@ -236,27 +246,6 @@ public class Haptics implements Runnable {
         return Math.abs(player.getColliderCenter().getY() - object.getColliderCenter().getY()) <= 16;
     }
 
-    @Override
-    public void run() {
-        while (true) {
-
-            if (!navigationMode) {
-                setUpMotorsForGameHaptics();
-                generateHaptics();
-            } else {
-                setUpMotorsForNavigationHaptics();
-                navigationHaptics();
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                break;
-            }
-        }
-    }
-
     private void setUpMotorsForNavigationHaptics() {
         removeOffTime();
     }
@@ -265,7 +254,8 @@ public class Haptics implements Runnable {
         addDefaultOffTime();
     }
 
-    private void navigationHaptics() {
+    private void generateNavigationHaptics() {
+        setAllMotorsIntensityToZero();
         double verticalInfo = player.getColliderCenter().getY() - goalTile.getColliderCenter().getY();
         double horizontalInfo = player.getColliderCenter().getX() - goalTile.getColliderCenter().getX();
 
@@ -286,10 +276,6 @@ public class Haptics implements Runnable {
 
     public void switchOnOffNavigationMode(boolean onOff) {
         navigationMode = onOff;
-    }
-
-    public void resume() {
-        navigationMode = false;
     }
 
     public void updatePlayer(Bomber player) {
@@ -329,6 +315,10 @@ public class Haptics implements Runnable {
 
     public void resetAllMotors() {
         turnOffAllMotors();
+        setAllMotorsIntensityToZero();
+    }
+
+    private void setAllMotorsIntensityToZero() {
         updateUpIntensity(0);
         updateDownIntensity(0);
         updateLeftIntensity(0);

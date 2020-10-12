@@ -53,10 +53,7 @@ public class GamePanel extends JPanel implements Runnable {
     private static final double SOFTWALL_RATE = 0.825;
 
     private final Haptics haptics;
-    private final Thread hapticsThread;
 
-    private Bomber player;
-    private Powerup goalTile;
     private volatile boolean generateNewMaze;
     private volatile boolean reconstructMaze;
 
@@ -65,7 +62,8 @@ public class GamePanel extends JPanel implements Runnable {
      * @param filename Name of the map file
      */
     GamePanel(String filename) {
-        final int mazeSize = 20;
+        // TODO make dynamic
+        final int mazeSize = 15;
         this.setFocusable(true);
         this.requestFocus();
         this.setControls();
@@ -73,7 +71,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(new GameController(this));
         mazeCreator = new MazeCreator(mazeSize);
         haptics = new Haptics(mazeSize);
-        hapticsThread = new Thread(haptics);
     }
 
     /**
@@ -94,8 +91,6 @@ public class GamePanel extends JPanel implements Runnable {
         Statistics.incrementTriesOnCurrentMaze(level);
         Statistics.incrementTotalPlayedMazes(level);
         Statistics.setStartTime();
-        hapticsThread.start();
-        //haptics = new Haptics((Bomber) GameObjectCollection.gameObjects.get(2).get(1));
     }
 
     private void createTheMazeStructure() {
@@ -149,7 +144,7 @@ public class GamePanel extends JPanel implements Runnable {
 
                     case ("1"):     // Player 1; Bomber
                         BufferedImage[][] sprMapP1 = ResourceCollection.SpriteMaps.PLAYER_1.getSprites();
-                        player = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP1, 1);
+                        Bomber player = new Bomber(new Point2D.Float(x * 32, y * 32 - 16), sprMapP1, 1);
                         PlayerController playerController = new PlayerController(player, this.controls);
                         this.addKeyListener(playerController);
                         this.gameHUD.assignPlayer(player);
@@ -159,7 +154,7 @@ public class GamePanel extends JPanel implements Runnable {
                         break;
 
                     case ("C"):
-                        goalTile = new Powerup(new Point2D.Float(x * 32, y * 32), Powerup.Type.Checkpoint);
+                        Powerup goalTile = new Powerup(new Point2D.Float(x * 32, y * 32), Powerup.Type.Checkpoint);
                         GameObjectCollection.spawn(goalTile);
                         haptics.updateGoalTile(goalTile);
                         break;
@@ -273,6 +268,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (delta >= 1) {
                 this.update();
+                haptics.generateHaptics();
                 ticks++;
                 delta--;
             }
