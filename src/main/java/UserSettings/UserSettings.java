@@ -3,7 +3,7 @@ package UserSettings;
 public class UserSettings {
 
     private static boolean muteMusic; // On/Off
-    private static double vibrationIntensity = 2.0; // From 1-2 with 0.1 adjustments
+    private static double vibrationIntensity = 1.0; // From 1-3 with 0.2 adjustments
 
 
     public static boolean isMuteMusic() {
@@ -19,14 +19,14 @@ public class UserSettings {
     }
 
     public static void decrementIntensity() {
-        if (vibrationIntensity < 2) {
-            vibrationIntensity += 0.1;
+        if (vibrationIntensity < 3) {
+            vibrationIntensity += 0.2;
         }
     }
 
     public static void incrementIntensity() {
         if (vibrationIntensity > 1) {
-            vibrationIntensity -= 0.1;
+            vibrationIntensity -= 0.2;
         }
     }
 
