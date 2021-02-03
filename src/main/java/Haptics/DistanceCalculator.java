@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Haptics {
+public class DistanceCalculator {
     double totalDistanceVertical;
     double totalDistanceHorizontal;
 
@@ -26,11 +26,11 @@ public class Haptics {
     double distanceLeft;
     double distanceRight;
 
-    private final GameToHapticsAPI hapticsAPI;
+    private final GameToGloveAPI hapticsAPI;
     private volatile boolean navigationMode;
 
-    public Haptics(int mazeSize) {
-        this.hapticsAPI = new GameToHapticsIntensity();
+    public DistanceCalculator(int mazeSize) {
+        this.hapticsAPI = new GameToGloveIntensity();
         totalDistanceHorizontal = 32 * (mazeSize - 2) - 12;
         totalDistanceVertical = 32 * (mazeSize - 2) - 12;
     }

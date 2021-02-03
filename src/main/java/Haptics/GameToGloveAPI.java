@@ -2,7 +2,7 @@ package Haptics;
 
 import java.util.ArrayList;
 
-public abstract class GameToHapticsAPI {
+public abstract class GameToGloveAPI {
 
     protected final int up = 0;
     protected final int down = 1;
@@ -18,7 +18,7 @@ public abstract class GameToHapticsAPI {
     private SerialConnector serialConnector;
     protected ArrayList<Motor> motors;
 
-    public GameToHapticsAPI() {
+    public GameToGloveAPI() {
         initializeMotors();
         initializeSerialConnection();
         System.out.println("Java motor objects has been created with initial settings");

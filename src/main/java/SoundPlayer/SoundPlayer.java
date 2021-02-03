@@ -1,4 +1,4 @@
-package Sounds;
+package SoundPlayer;
 
 
 import UserSettings.UserSettings;

@@ -1,6 +1,6 @@
 package gameobjects;
 
-import Sounds.SoundPlayer;
+import SoundPlayer.SoundPlayer;
 import util.GameObjectCollection;
 
 import java.awt.geom.Point2D;

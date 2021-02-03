@@ -12,6 +12,7 @@ public class SerialConnector {
 
     public SerialConnector() {
         serialPort = SerialPort.getCommPort("COM7");
+        serialPort.setBaudRate(115200);
         serialPort.setComPortTimeouts(SerialPort.TIMEOUT_SCANNER, 0, 0);
 
         if (serialPort.openPort()) {
@@ -22,11 +23,11 @@ public class SerialConnector {
 
 
     void write(String motorData) {
-        System.out.println("Writing " + motorData + " to " + serialPort.getSystemPortName() + "...");
         if (serialPort != null && serialPort.isOpen()) {
+            System.out.println("Writing " + motorData + " to " + serialPort.getSystemPortName() + "...");
             output.println(motorData);
         } else {
-            //System.out.println("Something went wrong in write method...");
+            System.out.println("Something went wrong in write method...");
         }
     }
 }

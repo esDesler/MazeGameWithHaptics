@@ -1,8 +1,8 @@
 package Haptics;
 
-public class GameToHapticsInterval extends GameToHapticsAPI {
+public class GameToGloveInterval extends GameToGloveAPI {
 
-    public GameToHapticsInterval() {
+    public GameToGloveInterval() {
         super();
     }
 
