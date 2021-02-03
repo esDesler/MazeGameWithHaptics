@@ -1,6 +1,6 @@
-import Haptics.Haptics;
+import Haptics.DistanceCalculator;
 import MazeCreator.MazeCreator;
-import Sounds.SoundPlayer;
+import SoundPlayer.SoundPlayer;
 import UserSettings.UserSettings;
 import gameobjects.Bomber;
 import gameobjects.GameObject;
@@ -17,11 +17,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -52,7 +48,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private static final double SOFTWALL_RATE = 0.825;
 
-    private final Haptics haptics;
+    private final DistanceCalculator distanceCalculator;
 
     private volatile boolean generateNewMaze;
     private volatile boolean reconstructMaze;
@@ -70,7 +66,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.bg = ResourceCollection.Images.BACKGROUND.getImage();
         this.addKeyListener(new GameController(this));
         mazeCreator = new MazeCreator(mazeSize);
-        haptics = new Haptics(mazeSize);
+        distanceCalculator = new DistanceCalculator(mazeSize);
     }
 
     /**
@@ -149,14 +145,14 @@ public class GamePanel extends JPanel implements Runnable {
                         this.addKeyListener(playerController);
                         this.gameHUD.assignPlayer(player);
                         GameObjectCollection.spawn(player);
-                        haptics.updatePlayer(player);
+                        distanceCalculator.updatePlayer(player);
                         SoundPlayer.setStartPosition(player.getPosition().x, player.getPosition().y);
                         break;
 
                     case ("C"):
                         Powerup goalTile = new Powerup(new Point2D.Float(x * 32, y * 32), Powerup.Type.Checkpoint);
                         GameObjectCollection.spawn(goalTile);
-                        haptics.updateGoalTile(goalTile);
+                        distanceCalculator.updateGoalTile(goalTile);
                         break;
 
                     case ("PB"):    // Powerup Bomb
@@ -268,7 +264,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (delta >= 1) {
                 this.update();
-                haptics.generateHaptics();
+                distanceCalculator.generateHaptics();
                 ticks++;
                 delta--;
             }
@@ -421,7 +417,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void switchOnOffNavigationMode(boolean navigationMode) {
-        haptics.switchOnOffNavigationMode(navigationMode);
+        distanceCalculator.switchOnOffNavigationMode(navigationMode);
     }
 }
 
